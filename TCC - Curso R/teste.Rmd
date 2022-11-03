@@ -1,22 +1,25 @@
 ---
-title: "Brincando com o IMDB"
-author: "Vitor Fortes"
+title: "Um passeio digital pela história do cinema"
+author: "Vitor H. F. Vieira"
 date: "`r Sys.Date()`"
 output:
   rmdformats::downcute:
     self_contained: true
     default_style: "light"
     downcute_theme: "default"
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
 ## Global options
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ------------------------------------------------------------------------
 
-# 1. O que responder?
+# O que é o IMDB?
+
+O IMDB é uma base de dados on-line que reúne informações a respeito de grandes indústrias de entretenimento do mundo, em particular o cinema, que será nosso objeto de estudo neste trabalho. Fundado em 1990, mantém-se até hoje como fonte confiável para obtenção de informações a respeito da Sétima Arte. Vamos desbravá-lo?
 
 O seu relatório deve (ao menos) responder as seguintes perguntas:
 
@@ -46,3 +49,15 @@ imdb <- basesCursoR::pegar_base("imdb_completa")
 imdb_pessoas <- basesCursoR::pegar_base("imdb_pessoas")
 imdb_avaliacoes <- basesCursoR::pegar_base("imdb_avaliacoes")
 ```
+
+# Terceiro teste
+
+Temos de colocar um código para testar de forma satisfatória a ferramenta
+
+```{r}
+lucro_real <- readRDS('data\\rds\\lucro_real.rds')
+lucro_real |>
+  head(10)
+```
+
+aa

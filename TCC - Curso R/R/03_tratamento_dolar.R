@@ -8,7 +8,7 @@ imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
 # Primeiramente escolhemos colunas de interesse e descartamos NA.
 
 imdb_orcam_rec <- imdb_completa |>
-  select(titulo_original, ano, nota_imdb, genero, orcamento, receita) |>
+  select(titulo_original, ano, nota_imdb, direcao, elenco, genero, orcamento, receita) |>
   drop_na(c('orcamento', 'receita'))
 
 #
@@ -73,7 +73,7 @@ genero_lucro
 # baseando-se apenas em valores em dólar?
 
 imdb_orcam_rec |>
-  select(titulo_original, ano, lucro_real) |>
+  select(titulo_original, ano, direcao, lucro_real) |>
   arrange(desc(lucro_real))
 
 # Salvar a nova tibble em rds
@@ -100,4 +100,3 @@ imdb_genero_nota <- imdb_orcam_rec |>
 imdb_genero_nota
 
 #
-

@@ -108,7 +108,7 @@ imdb_mes_dia_tibble
 # É possível que, dentro do IMDB, o primeiro dia de um mês seja padrão para
 # aquelas estreias cujo o dia é desconhecido, ainda que se conheça
 # o mês de lançamento. Assim, filtraremos apenas o dia de estreia,
-# de modo que seja maior do que 1 e contabilize todos os demais dias.
+# de modo que seja maior do que 1, contabilizando somente os demais dias.
 
 #### DIA > 1
 
@@ -124,6 +124,6 @@ imdb_mes_dia_tibble_mqu
 # O primeiro lugar é o dia das Bruxas, o popular Halloween,
 # também comemorado mundialmente no dia 31 de outubro.
 
-# Será que há correlação entre a receita de um filme e o fato de sua estreia
-# acontecer em um feriado
+# Será que há correlação entre a receita de um filme e o fato de a sua estreia
+# acontecer em um feriado?
 
