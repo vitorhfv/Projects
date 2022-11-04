@@ -1,2 +1,2 @@
 # Projects
-Projects based in economics knowledge.
+Every project that i spent an amount of time will be here! 
