@@ -7,7 +7,7 @@
 
         <meta name="author" content="Vitor H. F. Vieira" />
     
-        <meta name="date" content="2022-11-02" />
+        <meta name="date" content="2022-11-03" />
     
     <title>Um passeio digital pela história do cinema</title>
 
@@ -1593,7 +1593,7 @@ margin-left: 0 !important;
            <span class="glyphicon glyphicon-user"></span> Vitor H. F.
 Vieira
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-02</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-03</p>
            
 
    
@@ -1605,10 +1605,41 @@ Vieira
 <div id="o-que-é-o-imdb" class="section level1">
 <h1>O que é o IMDB?</h1>
 <p>O IMDB é uma base de dados on-line que reúne informações a respeito
-de grandes indústrias de entretenimento do mundo, em particular o
-cinema, que será nosso objeto de estudo neste trabalho. Fundado em 1990,
-mantém-se até hoje como fonte confiável para obtenção de informações a
-respeito da Sétima Arte. Vamos desbravá-lo?</p>
+de grandes indústrias de entretenimento do mundo, em particular a
+cinematográfica, que será nosso objeto de estudo neste trabalho. Fundado
+em 1990, mantém-se até hoje como fonte confiável para obtenção de
+informações a respeito da Sétima Arte. Vamos desbravá-lo?</p>
+<p>Para tal, carreguemos a base de dados do IMDB mais ampla e o pacote
+<code>tidyverse</code>:</p>
+<pre class="r"><code>library (tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>imdb_completa &lt;- readRDS(&#39;data-raw/rds/imdb_completa.rds&#39;)</code></pre>
+<p>Neste momento, tentemos explorar a base de dados a partir de algumas
+perguntas. Qual é o mês do ano com mais estreias cinematográficas,
+segundo o IMDB? E o dia do ano?</p>
+<p>Para respondê-la, escolhemos a variável de interesse
+<code>data_lançamento</code>, transformando-a em data, e excluímos os
+valores nulos desta coluna, para que possamos dividi-la em três .</p>
+<pre class="r"><code>imdb_completa2 &lt;- imdb_completa |&gt;
+  select(titulo, data_lancamento) |&gt;
+  mutate(data_lancamento = as.Date(data_lancamento)) |&gt;
+  drop_na (data_lancamento)
+
+
+# Iremos dividir em três a coluna relativa à data.
+
+
+imdb_data &lt;- imdb_completa2 |&gt;
+  mutate (ano = lubridate::year(data_lancamento),
+          mes = lubridate::month(data_lancamento),
+          dia = lubridate::day(data_lancamento))</code></pre>
 <p>O seu relatório deve (ao menos) responder as seguintes perguntas:</p>
 <ol style="list-style-type: decimal">
 <li><p>Qual o mês do ano com o maior númedo de filmes? E o dia do
@@ -1653,50 +1684,21 @@ ferramenta</p>
 <pre class="r"><code>lucro_real &lt;- readRDS(&#39;data\\rds\\lucro_real.rds&#39;)
 lucro_real |&gt;
   head(10)</code></pre>
-<pre><code>##                        titulo_original  ano nota_imdb
-## 1         Das Cabinet des Dr. Caligari 1920       8.1
-## 2  The Four Horsemen of the Apocalypse 1921       7.2
-## 3                              The Kid 1921       8.3
-## 4    A Woman of Paris: A Drama of Fate 1923       7.0
-## 5                        The Gold Rush 1925       8.2
-## 6        Sunrise: A Song of Two Humans 1927       8.1
-## 7                          The Unknown 1927       7.8
-## 8                                Wings 1927       7.5
-## 9                           The Circus 1928       8.1
-## 10                         Madam Satan 1930       6.5
-##                                         direcao
-## 1                                  Robert Wiene
-## 2                                    Rex Ingram
-## 3                               Charles Chaplin
-## 4                               Charles Chaplin
-## 5                               Charles Chaplin
-## 6                                   F.W. Murnau
-## 7                                  Tod Browning
-## 8  William A. Wellman, Harry d&#39;Abbadie d&#39;Arrast
-## 9                               Charles Chaplin
-## 10                             Cecil B. DeMille
-##                                                                                                                                                                                                                                           elenco
-## 1                                                                                                                                      Werner Krauss, Conrad Veidt, Friedrich Feher, Lil Dagover, Hans Heinrich von Twardowski, Rudolf Lettinger
-## 2  Pomeroy Cannon, Josef Swickard, Bridgetta Clark, Rudolph Valentino, Virginia Warwick, Alan Hale, Mabel Van Buren, Stuart Holmes, John St. Polis, Alice Terry, Mark Fenton, Derek Ghent, Nigel De Brulier, Bowditch M. Turner, Edward Connelly
-## 3                                                                                                                                                                                    Carl Miller, Edna Purviance, Jackie Coogan, Charles Chaplin
-## 4                                                                                                                   Edna Purviance, Clarence Geldart, Carl Miller, Lydia Knott, Charles K. French, Adolphe Menjou, Betty Morrissey, Malvina Polo
-## 5                                                                                                                                                            Charles Chaplin, Mack Swain, Tom Murray, Henry Bergman, Malcolm Waite, Georgia Hale
-## 6                                                                                               George O&#39;Brien, Janet Gaynor, Margaret Livingston, Bodil Rosing, J. Farrell MacDonald, Ralph Sipperly, Jane Winton, Arthur Housman, Eddie Boland
-## 7                                                                                                                                                              Lon Chaney, Norman Kerry, Joan Crawford, Nick De Ruiz, John George, Frank Lanning
-## 8                                    Clara Bow, Charles &#39;Buddy&#39; Rogers, Richard Arlen, Jobyna Ralston, El Brendel, Richard Tucker, Gary Cooper, Gunboat Smith, Henry B. Walthall, Roscoe Karns, Julia Swayne Gordon, Arlette Marchal, Rod Rogers
-## 9                                                                                                           Al Ernest Garcia, Merna Kennedy, Harry Crocker, George Davis, Henry Bergman, Tiny Sandford, John Rand, Steve Murphy, Charles Chaplin
-## 10                  Kay Johnson, Reginald Denny, Lillian Roth, Roland Young, Elsa Peterson, Jack King, Eddie Prinz, Boyd Irwin, Wallace MacDonald, Tyler Brooke, Ynez Seabury, Theodore Kosloff, Julanne Johnston, Martha Sleeper, Doris McMahon
-##                      genero orcamento receita    lucro   lucro_real
-## 1  Fantasy, Horror, Mystery     18000    8811    -9189    -81585.45
-## 2       Drama, Romance, War    800000 9183673  8383673  74435272.39
-## 3     Comedy, Drama, Family    250000   26916  -223084  -1980673.42
-## 4            Drama, Romance    351000   11233  -339767  -3016655.01
-## 5  Adventure, Comedy, Drama    923000   26916  -896084  -7955970.69
-## 6            Drama, Romance    200000  121107   -78893   -700459.33
-## 7    Drama, Horror, Romance    217000    4841  -212159  -1883674.73
-## 8       Drama, Romance, War   2000000     746 -1999254 -17750574.96
-## 9           Comedy, Romance    900000   26916  -873084  -7751762.90
-## 10   Comedy, Drama, Musical    980000    1005  -978995  -8692104.22</code></pre>
+<pre><code>## # A tibble: 10 × 10
+##    titulo_…¹   ano nota_…² direcao elenco genero orcam…³ receita   lucro lucro…⁴
+##    &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 Das Cabi…  1920     8.1 Robert… Werne… Fanta…   18000    8811 -9.19e3 -8.16e4
+##  2 The Four…  1921     7.2 Rex In… Pomer… Drama…  800000 9183673  8.38e6  7.44e7
+##  3 The Kid    1921     8.3 Charle… Carl … Comed…  250000   26916 -2.23e5 -1.98e6
+##  4 A Woman …  1923     7   Charle… Edna … Drama…  351000   11233 -3.40e5 -3.02e6
+##  5 The Gold…  1925     8.2 Charle… Charl… Adven…  923000   26916 -8.96e5 -7.96e6
+##  6 Sunrise:…  1927     8.1 F.W. M… Georg… Drama…  200000  121107 -7.89e4 -7.00e5
+##  7 The Unkn…  1927     7.8 Tod Br… Lon C… Drama…  217000    4841 -2.12e5 -1.88e6
+##  8 Wings      1927     7.5 Willia… Clara… Drama… 2000000     746 -2.00e6 -1.78e7
+##  9 The Circ…  1928     8.1 Charle… Al Er… Comed…  900000   26916 -8.73e5 -7.75e6
+## 10 Madam Sa…  1930     6.5 Cecil … Kay J… Comed…  980000    1005 -9.79e5 -8.69e6
+## # … with abbreviated variable names ¹​titulo_original, ²​nota_imdb, ³​orcamento,
+## #   ⁴​lucro_real</code></pre>
 <p>aa</p>
 </div>
 </div>

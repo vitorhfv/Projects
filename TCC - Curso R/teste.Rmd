@@ -19,7 +19,34 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # O que é o IMDB?
 
-O IMDB é uma base de dados on-line que reúne informações a respeito de grandes indústrias de entretenimento do mundo, em particular o cinema, que será nosso objeto de estudo neste trabalho. Fundado em 1990, mantém-se até hoje como fonte confiável para obtenção de informações a respeito da Sétima Arte. Vamos desbravá-lo?
+O IMDB é uma base de dados on-line que reúne informações a respeito de grandes indústrias de entretenimento do mundo, em particular a cinematográfica, que será nosso objeto de estudo neste trabalho. Fundado em 1990, mantém-se até hoje como fonte confiável para obtenção de informações a respeito da Sétima Arte. Vamos desbravá-lo?
+
+Para tal, carreguemos a base de dados do IMDB mais ampla e o pacote `tidyverse`:
+
+```{r}
+library (tidyverse)
+imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
+```
+
+Neste momento, tentemos explorar a base de dados a partir de algumas perguntas. Qual é o mês do ano com mais estreias cinematográficas, segundo o IMDB? E o dia do ano?
+
+Para respondê-la, escolhemos a variável de interesse `data_lançamento`, transformando-a em data, e excluímos os valores nulos desta coluna, para que possamos dividi-la em três .
+
+```{r}
+imdb_completa2 <- imdb_completa |>
+  select(titulo, data_lancamento) |>
+  mutate(data_lancamento = as.Date(data_lancamento)) |>
+  drop_na (data_lancamento)
+
+
+# Iremos dividir em três a coluna relativa à data.
+
+
+imdb_data <- imdb_completa2 |>
+  mutate (ano = lubridate::year(data_lancamento),
+          mes = lubridate::month(data_lancamento),
+          dia = lubridate::day(data_lancamento))
+```
 
 O seu relatório deve (ao menos) responder as seguintes perguntas:
 
@@ -32,6 +59,7 @@ O seu relatório deve (ao menos) responder as seguintes perguntas:
 4.  Considerando apenas orçamentos e receitas em dólar (\$), qual o gênero com maior lucro? E com maior nota média?
 
 5.  Dentre os filmes na base `imdb_completa`, escolha o seu favorito. Então faça os itens a seguir:
+
 
 # 2. E agora?
 

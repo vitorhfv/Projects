@@ -1,7 +1,5 @@
 library(tidyverse)
-library(lubridate)
 
-imdb <- readRDS('data-raw/rds/imdb.rds')
 imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
 
 
