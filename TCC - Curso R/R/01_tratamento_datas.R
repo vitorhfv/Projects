@@ -1,7 +1,6 @@
 library(tidyverse)
 
-imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
-
+imdb_completa <- basesCursoR::pegar_base("imdb_completa")
 
 # 1.  Qual o mês do ano com o maior número de filmes? E o dia do ano?
 
@@ -27,7 +26,7 @@ imdb_data <- imdb_completa2 |>
 # É possível responder à pergunta inicial de duas formas:
 # a sucinta e a mais completa. vamos a elas?
 
-# A partir de uma função criada sobre a qual  calculamos a moda,
+# A partir de uma função sobre a qual  calculamos a moda,
 # o termo mais repetido dentro de um vetor, temos:
 
 
@@ -43,22 +42,23 @@ mais_repetido(imdb_data$mes)
 
 imdb_meses <- imdb_data |>
   filmes_lancados_total (mes) |>
-  arrange(desc(filmes))
-
-
-imdb_meses
-#########
-
-# Organizando uma tibble
-
-imdb_meses_tibble <- imdb_meses |>
   distinct(mes, filmes) |>
   arrange(desc(filmes)) |>
   mutate (mes = lubridate::month(mes, label = TRUE),
-    filmes_lancados = filmes) |>
+          filmes_lancados = filmes) |>
   select(mes, filmes_lancados)
 
-imdb_meses_tibble
+imdb_meses
+knitr::kable(imdb_meses)
+
+
+imdb_meses |>
+  ggplot()+
+  aes(x = mes, y = filmes_lancados, group = 1)+
+  geom_line(size = 1.8)
+
+#########
+
 # A pergunta subsequente é a seguinte:
 # Qual o dia do ano em que há mais estreias cinematográficas?
 
@@ -124,4 +124,34 @@ imdb_mes_dia_tibble_mqu
 
 # Será que há correlação entre a receita de um filme e o fato de a sua estreia
 # acontecer em um feriado?
+imdb_orcam_rec <- readRDS('data/rds/imdb_orcam_rec.rds')
 
+imdb_correla <- imdb_orcam_rec |>
+  select(titulo_original, data_lancamento, receita)
+#
+
+imdb_correla$receita_real <-
+  priceR::adjust_for_inflation(imdb_correla$receita,
+                               imdb_correla$data_lancamento,
+                               'US',
+                               to_date = 2020)
+
+imdb_orcam_rec <- readRDS('data/rds/imdb_orcam_rec.rds')
+
+
+
+
+imdb_correla <- readRDS('data/rds/imdb_corr.rds')
+
+
+imdb_correla
+
+imdb_correla <- imdb_correla |>
+  select(titulo_original, data_lancamento, receita_real) |>
+  filter(data_lancamento > '1999')
+
+imdb_correla
+
+
+
+??holidays

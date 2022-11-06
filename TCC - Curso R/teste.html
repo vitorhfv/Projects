@@ -7,9 +7,9 @@
 
         <meta name="author" content="Vitor H. F. Vieira" />
     
-        <meta name="date" content="2022-11-03" />
+        <meta name="date" content="2022-11-05" />
     
-    <title>Um passeio digital pela história do cinema</title>
+    <title>Um passeio pela história do cinema com o IMDB</title>
 
         <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1587,13 +1587,14 @@ margin-left: 0 !important;
    </div>
    
         
-      <h1 class="title">Um passeio digital pela história do cinema</h1>
+      <h1 class="title">Um passeio pela história do cinema com o
+IMDB</h1>
       
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Vitor H. F.
 Vieira
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-03</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-05</p>
            
 
    
@@ -1608,7 +1609,7 @@ Vieira
 de grandes indústrias de entretenimento do mundo, em particular a
 cinematográfica, que será nosso objeto de estudo neste trabalho. Fundado
 em 1990, mantém-se até hoje como fonte confiável para obtenção de
-informações a respeito da Sétima Arte. Vamos desbravá-lo?</p>
+informações técnicas a respeito da Sétima Arte. Vamos desbravá-lo?</p>
 <p>Para tal, carreguemos a base de dados do IMDB mais ampla e o pacote
 <code>tidyverse</code>:</p>
 <pre class="r"><code>library (tidyverse)</code></pre>
@@ -1620,11 +1621,11 @@ informações a respeito da Sétima Arte. Vamos desbravá-lo?</p>
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>imdb_completa &lt;- readRDS(&#39;data-raw/rds/imdb_completa.rds&#39;)</code></pre>
+<pre class="r"><code>imdb_completa &lt;- basesCursoR::pegar_base(&quot;imdb_completa&quot;)</code></pre>
 <p>Neste momento, tentemos explorar a base de dados a partir de algumas
 perguntas. Qual é o mês do ano com mais estreias cinematográficas,
 segundo o IMDB? E o dia do ano?</p>
-<p>Para respondê-la, escolhemos a variável de interesse
+<p>Para responder a essas perguntas, escolhemos a variável de interesse
 <code>data_lançamento</code>, transformando-a em data, e excluímos os
 valores nulos desta coluna, para que possamos dividi-la em três .</p>
 <pre class="r"><code>imdb_completa2 &lt;- imdb_completa |&gt;
@@ -1633,13 +1634,84 @@ valores nulos desta coluna, para que possamos dividi-la em três .</p>
   drop_na (data_lancamento)
 
 
-# Iremos dividir em três a coluna relativa à data.
+# Divide-se em três a coluna relativa à data.
 
 
 imdb_data &lt;- imdb_completa2 |&gt;
   mutate (ano = lubridate::year(data_lancamento),
           mes = lubridate::month(data_lancamento),
           dia = lubridate::day(data_lancamento))</code></pre>
+<p>É possível responder às perguntas iniciais de duas formas: uma mais
+simples e outra mais demorada. Vamos a elas?</p>
+<p>A partir de uma função sobre a qual calculamos a moda, o termo mais
+repetido dentro de um vetor, temos:</p>
+<pre class="r"><code># A função abaixo busca o termo mais repetido dentro uma coluna. 
+
+mais_repetido &lt;- function(x) {
+  uniqx &lt;- unique(x)
+  uniqx[which.max(tabulate(match(x, uniqx)))]
+}
+
+mais_repetido(imdb_data$mes)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<p>Assim, o mês do ano com o maior número de filmes lançados dentre
+todos os filmes cuja data de estreia é conhecida é o décimo mês do ano,
+o popular outubro!</p>
+<p>Mas, quantos filmes, dentre todos os 81292 cuja data de lançamento é
+conhecida, foram lançados no mês de outubro, segundo o IMDB?</p>
+<pre class="r"><code>filmes_lancados_total&lt;- function (data, by, ...) {
+  data %&gt;%
+    group_by({{by}}) |&gt;
+    mutate(filmes=n()) |&gt;
+    ungroup()
+}
+
+imdb_meses &lt;- imdb_data |&gt;
+  filmes_lancados_total (mes) |&gt;
+  distinct(mes, filmes) |&gt;
+  arrange(desc(filmes)) |&gt;
+  mutate (mes = lubridate::month(mes, label = TRUE),
+          filmes_lancados = filmes) |&gt;
+  select(mes, filmes_lancados)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">mês</th>
+<th align="right">filmes lancados</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">out</td>
+<td align="right">8734</td>
+</tr>
+<tr class="even">
+<td align="left">set</td>
+<td align="right">7924</td>
+</tr>
+<tr class="odd">
+<td align="left">mar</td>
+<td align="right">7435</td>
+</tr>
+<tr class="even">
+<td align="left">nov</td>
+<td align="right">7094</td>
+</tr>
+<tr class="odd">
+<td align="left">abr</td>
+<td align="right">7078</td>
+</tr>
+<tr class="even">
+<td align="left">dez</td>
+<td align="right">6618</td>
+</tr>
+</tbody>
+</table>
+<p>Assim, confirmamos que o mês em que mais houve estreias
+cinematográficas, segundo o IMDB, foi outubro, seguido pelo meses de
+setembro, março e novembro, apontando uma tendência de lançamentos na
+segunda metade do ano. Agora vamos além: qual é o dia do ano onde mais
+há concentração de estreias no cinema?</p>
 <p>O seu relatório deve (ao menos) responder as seguintes perguntas:</p>
 <ol style="list-style-type: decimal">
 <li><p>Qual o mês do ano com o maior númedo de filmes? E o dia do

@@ -8,7 +8,7 @@ imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
 # Primeiramente escolhemos colunas de interesse e descartamos NA.
 
 imdb_orcam_rec <- imdb_completa |>
-  select(titulo_original, ano, nota_imdb, direcao, elenco, genero, orcamento, receita) |>
+  select(titulo_original, ano, data_lancamento, nota_imdb, direcao, elenco, genero, orcamento, receita) |>
   drop_na(c('orcamento', 'receita'))
 
 #
@@ -31,7 +31,9 @@ imdb_orcam_rec <- imdb_orcam_rec |>
          receita = as.double(str_extract(receita, regex_num)),
          lucro = receita - orcamento)
 
-imdb_orcam_rec
+
+saveRDS(imdb_orcam_rec, 'data/rds/imdb_orc_rec.rds')
+
 
 # Separamos os gêneros de modo que ficassem empilhados. Assim, cada filme
 # contará de forma separada para cada gênero. Isto posto, agrupamos a nova
