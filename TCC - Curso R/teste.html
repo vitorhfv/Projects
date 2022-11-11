@@ -7,9 +7,9 @@
 
         <meta name="author" content="Vitor H. F. Vieira" />
     
-        <meta name="date" content="2022-11-05" />
+        <meta name="date" content="2022-11-10" />
     
-    <title>Um passeio pela história do cinema com o IMDB</title>
+    <title>Um passeio pela história do cinema com o IMDB e o R</title>
 
         <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1569,6 +1569,13 @@ margin-left: 0 !important;
             <ul>
             <li><a href="#o-que-é-o-imdb" id="toc-o-que-é-o-imdb">O que
             é o IMDB?</a></li>
+            <li><a href="#e-os-países" id="toc-e-os-países">E os
+            países?</a>
+            <ul>
+            <li><a href="#e-as-moedas" id="toc-e-as-moedas">E as
+            moedas?</a></li>
+            <li><a href="#gêneros-e-lucro" id="toc-gêneros-e-lucro">Gêneros e lucro</a></li>
+            </ul></li>
             <li><a href="#e-agora" id="toc-e-agora">2. E agora?</a></li>
             <li><a href="#terceiro-teste" id="toc-terceiro-teste">Terceiro teste</a></li>
             </ul>
@@ -1587,14 +1594,14 @@ margin-left: 0 !important;
    </div>
    
         
-      <h1 class="title">Um passeio pela história do cinema com o
-IMDB</h1>
+      <h1 class="title">Um passeio pela história do cinema com o IMDB e
+o R</h1>
       
       <p class="authors">
            <span class="glyphicon glyphicon-user"></span> Vitor H. F.
 Vieira
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-05</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-10</p>
            
 
    
@@ -1606,12 +1613,16 @@ Vieira
 <div id="o-que-é-o-imdb" class="section level1">
 <h1>O que é o IMDB?</h1>
 <p>O IMDB é uma base de dados on-line que reúne informações a respeito
-de grandes indústrias de entretenimento do mundo, em particular a
-cinematográfica, que será nosso objeto de estudo neste trabalho. Fundado
-em 1990, mantém-se até hoje como fonte confiável para obtenção de
+das grandes indústrias de entretenimento do mundo, em particular a
+cinematográfica, que será objeto de estudo neste trabalho. Fundado em
+1990, mantém-se até hoje como fonte confiável para obtenção de
 informações técnicas a respeito da Sétima Arte. Vamos desbravá-lo?</p>
-<p>Para tal, carreguemos a base de dados do IMDB mais ampla e o pacote
-<code>tidyverse</code>:</p>
+<p>Para tal, carreguemos a base de dados mais ampla do IMDB chamada
+<code>imdb_completa</code>, formada por mais de oitenta e cinco mil
+linhas e vinte e uma colunas, que traz informações gerais em relação a
+milhares de filmes, contemplando toda a história do cinema, desde o
+final do século XIX até a década 2020. Além disso, carreguemos também o
+pacote <code>tidyverse</code>:</p>
 <pre class="r"><code>library (tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
 ## ✔ ggplot2 3.3.6      ✔ purrr   0.3.5 
@@ -1621,13 +1632,38 @@ informações técnicas a respeito da Sétima Arte. Vamos desbravá-lo?</p>
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>imdb_completa &lt;- basesCursoR::pegar_base(&quot;imdb_completa&quot;)</code></pre>
+<pre class="r"><code>imdb_completa &lt;- basesCursoR::pegar_base(&quot;imdb_completa&quot;)
+
+dplyr::glimpse(imdb_completa)</code></pre>
+<pre><code>## Rows: 85,855
+## Columns: 21
+## $ id_filme             &lt;chr&gt; &quot;tt0000009&quot;, &quot;tt0000574&quot;, &quot;tt0001892&quot;, &quot;tt0002101…
+## $ titulo               &lt;chr&gt; &quot;Miss Jerry&quot;, &quot;The Story of the Kelly Gang&quot;, &quot;Den…
+## $ titulo_original      &lt;chr&gt; &quot;Miss Jerry&quot;, &quot;The Story of the Kelly Gang&quot;, &quot;Den…
+## $ ano                  &lt;dbl&gt; 1894, 1906, 1911, 1912, 1911, 1912, 1919, 1913, 1…
+## $ data_lancamento      &lt;chr&gt; &quot;1894-10-09&quot;, &quot;1906-12-26&quot;, &quot;1911-08-19&quot;, &quot;1912-1…
+## $ genero               &lt;chr&gt; &quot;Romance&quot;, &quot;Biography, Crime, Drama&quot;, &quot;Drama&quot;, &quot;D…
+## $ duracao              &lt;dbl&gt; 45, 70, 53, 100, 68, 60, 85, 120, 120, 55, 121, 5…
+## $ pais                 &lt;chr&gt; &quot;USA&quot;, &quot;Australia&quot;, &quot;Germany, Denmark&quot;, &quot;USA&quot;, &quot;I…
+## $ idioma               &lt;chr&gt; &quot;None&quot;, &quot;None&quot;, NA, &quot;English&quot;, &quot;Italian&quot;, &quot;Englis…
+## $ orcamento            &lt;chr&gt; NA, &quot;$ 2250&quot;, NA, &quot;$ 45000&quot;, NA, NA, NA, &quot;ITL 450…
+## $ receita              &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ receita_eua          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ nota_imdb            &lt;dbl&gt; 5.9, 6.1, 5.8, 5.2, 7.0, 5.7, 6.8, 6.2, 6.7, 5.5,…
+## $ num_avaliacoes       &lt;dbl&gt; 154, 589, 188, 446, 2237, 484, 753, 273, 198, 225…
+## $ direcao              &lt;chr&gt; &quot;Alexander Black&quot;, &quot;Charles Tait&quot;, &quot;Urban Gad&quot;, &quot;…
+## $ roteiro              &lt;chr&gt; &quot;Alexander Black&quot;, &quot;Charles Tait&quot;, &quot;Urban Gad, Ge…
+## $ producao             &lt;chr&gt; &quot;Alexander Black Photoplays&quot;, &quot;J. and N. Tait&quot;, &quot;…
+## $ elenco               &lt;chr&gt; &quot;Blanche Bayliss, William Courtenay, Chauncey Dep…
+## $ descricao            &lt;chr&gt; &quot;The adventures of a female reporter in the 1890s…
+## $ num_criticas_publico &lt;dbl&gt; 1, 7, 5, 25, 31, 13, 12, 7, 4, 8, 9, 9, 16, 8, NA…
+## $ num_criticas_critica &lt;dbl&gt; 2, 7, 2, 3, 14, 5, 9, 5, 1, 1, 9, 28, 7, 23, 4, 2…</code></pre>
 <p>Neste momento, tentemos explorar a base de dados a partir de algumas
 perguntas. Qual é o mês do ano com mais estreias cinematográficas,
 segundo o IMDB? E o dia do ano?</p>
 <p>Para responder a essas perguntas, escolhemos a variável de interesse
 <code>data_lançamento</code>, transformando-a em data, e excluímos os
-valores nulos desta coluna, para que possamos dividi-la em três .</p>
+valores nulos desta coluna, para que possamos dividi-la em três.</p>
 <pre class="r"><code>imdb_completa2 &lt;- imdb_completa |&gt;
   select(titulo, data_lancamento) |&gt;
   mutate(data_lancamento = as.Date(data_lancamento)) |&gt;
@@ -1642,7 +1678,7 @@ imdb_data &lt;- imdb_completa2 |&gt;
           mes = lubridate::month(data_lancamento),
           dia = lubridate::day(data_lancamento))</code></pre>
 <p>É possível responder às perguntas iniciais de duas formas: uma mais
-simples e outra mais demorada. Vamos a elas?</p>
+simples e outra mais detalhada. Vamos a elas?</p>
 <p>A partir de uma função sobre a qual calculamos a moda, o termo mais
 repetido dentro de um vetor, temos:</p>
 <pre class="r"><code># A função abaixo busca o termo mais repetido dentro uma coluna. 
@@ -1659,6 +1695,17 @@ todos os filmes cuja data de estreia é conhecida é o décimo mês do ano,
 o popular outubro!</p>
 <p>Mas, quantos filmes, dentre todos os 81292 cuja data de lançamento é
 conhecida, foram lançados no mês de outubro, segundo o IMDB?</p>
+<p>Em primeiro lugar, cria-se uma função chamada
+<code>filmes_lancados_total</code>, cujo ofício é reagrupar os dados em
+questão a partir de um vetor, criando uma nova variável a partir da
+contagem de observações. Como o novo agrupamento repete a informação
+relevante para cada filme de forma individual, usemos o
+<code>distinct</code> para descartar o material repetido e ordenemos a
+nova coluna de maneira decrescente. Por fim, com o
+<code>lubridate</code> iremos transformar o mês em uma classe de
+<code>fatores</code>, de modo que estes sejam representados pelos seus
+respectivos nomes em português, além de escolhermos as variáveis de
+interesse com o <code>select</code>.</p>
 <pre class="r"><code>filmes_lancados_total&lt;- function (data, by, ...) {
   data %&gt;%
     group_by({{by}}) |&gt;
@@ -1670,14 +1717,14 @@ imdb_meses &lt;- imdb_data |&gt;
   filmes_lancados_total (mes) |&gt;
   distinct(mes, filmes) |&gt;
   arrange(desc(filmes)) |&gt;
-  mutate (mes = lubridate::month(mes, label = TRUE),
-          filmes_lancados = filmes) |&gt;
-  select(mes, filmes_lancados)</code></pre>
+  mutate (mes = lubridate::month(mes, label = TRUE)) |&gt;
+  select(mes, filmes)</code></pre>
+<p>Tabela 1: Os seis meses do ano com mais estreias cinematográficas</p>
 <table>
 <thead>
 <tr class="header">
-<th align="left">mês</th>
-<th align="right">filmes lancados</th>
+<th align="left">mes</th>
+<th align="right">filmes</th>
 </tr>
 </thead>
 <tbody>
@@ -1707,12 +1754,425 @@ imdb_meses &lt;- imdb_data |&gt;
 </tr>
 </tbody>
 </table>
-<p>Assim, confirmamos que o mês em que mais houve estreias
+<p>Portanto, confirmamos que o mês em que mais houve estreias
 cinematográficas, segundo o IMDB, foi outubro, seguido pelo meses de
 setembro, março e novembro, apontando uma tendência de lançamentos na
-segunda metade do ano. Agora vamos além: qual é o dia do ano onde mais
-há concentração de estreias no cinema?</p>
-<p>O seu relatório deve (ao menos) responder as seguintes perguntas:</p>
+segunda metade do ano, como observamos anteriormente. Agora vamos além:
+qual é o dia, dentre todos aqueles dentro de um ano, em que mais houve
+concentração de estreias no cinema?</p>
+<p>Primeiramente, reaproveitemos do exercício anterior a tibble
+<code>imdb_data</code>, que contempla todos aqueles filmes cuja data
+está em sua forma completa, dividida por dia, mês e ano. Para tal, vamos
+reunir os meses aos dias, de forma que haja uma nova coluna chamada
+<code>mes_dia</code>, pela qual reagruparemos os dados com a função
+<code>filmes_lançados_total</code>, utilizada anteriormente. Repetindo
+os mesmos processos anteriores, transformamos as colunas relativas a dia
+e mês em classe númerica para que esta última possa ser referida como um
+fator de meses com o <code>lubridate</code>. Assim, temos:</p>
+<pre class="r"><code>imdb_data2 &lt;- imdb_data |&gt;
+  unite(&quot;mes_dia&quot;, mes:dia, sep = &quot;-&quot;) |&gt;
+  filmes_lancados_total(mes_dia) |&gt;
+  distinct(mes_dia, filmes ) |&gt;
+  separate(mes_dia, c(&quot;mes&quot;, &quot;dia&quot;)) |&gt;
+  mutate(mes = as.double(mes),
+         dia = as.double(dia),
+         filmes_estreia_total = filmes) |&gt;
+  select(mes, dia, filmes) |&gt;
+  arrange(desc(filmes))
+
+# transformando a coluna relativa a mês em data.
+imdb_mes_dia_tibble &lt;- imdb_data2 |&gt;
+  mutate(mes = lubridate::month(mes, label = TRUE)
+         )</code></pre>
+<p>Tabela 2: Os 10 dias do ano com mais estreias cinematográficas
+(1894-2020)</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">mes</th>
+<th align="right">dia</th>
+<th align="right">filmes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">out</td>
+<td align="right">1</td>
+<td align="right">747</td>
+</tr>
+<tr class="even">
+<td align="left">mar</td>
+<td align="right">1</td>
+<td align="right">657</td>
+</tr>
+<tr class="odd">
+<td align="left">set</td>
+<td align="right">1</td>
+<td align="right">638</td>
+</tr>
+<tr class="even">
+<td align="left">dez</td>
+<td align="right">1</td>
+<td align="right">634</td>
+</tr>
+<tr class="odd">
+<td align="left">abr</td>
+<td align="right">1</td>
+<td align="right">623</td>
+</tr>
+<tr class="even">
+<td align="left">nov</td>
+<td align="right">1</td>
+<td align="right">619</td>
+</tr>
+<tr class="odd">
+<td align="left">mai</td>
+<td align="right">1</td>
+<td align="right">598</td>
+</tr>
+<tr class="even">
+<td align="left">fev</td>
+<td align="right">1</td>
+<td align="right">598</td>
+</tr>
+<tr class="odd">
+<td align="left">jan</td>
+<td align="right">1</td>
+<td align="right">590</td>
+</tr>
+<tr class="even">
+<td align="left">jun</td>
+<td align="right">1</td>
+<td align="right">575</td>
+</tr>
+</tbody>
+</table>
+<p>Portanto, de todas as datas dentro um ano o 1º de outubro é aquela
+que comporta mais estreias cinematográficas. Por outro lado, segundo a
+tabela acima, as dez maiores datas de estreia são aquelas relativas ao
+primeiro dia de um mês. Não é um comportamento estranho?</p>
+<p>É possível que, dentro do IMDB, o primeiro dia de um mês seja padrão
+para aquelas estreias cujo o dia é desconhecido, ainda que se conheça o
+mês de lançamento. Assim, filtraremos apenas o dia de estreia, de modo
+que seja maior do que 1, contabilizando somente os demais dias.</p>
+<pre class="r"><code>imdb_mes_dia_tibble_mqu &lt;- imdb_mes_dia_tibble |&gt;
+  filter (dia &gt; 1)</code></pre>
+<p>Tabela 3: Os 10 dias do ano com mais estreias cinematográficas (com
+exceção do dia 1º de cada mês)</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">mes</th>
+<th align="right">dia</th>
+<th align="right">filmes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">out</td>
+<td align="right">31</td>
+<td align="right">365</td>
+</tr>
+<tr class="even">
+<td align="left">dez</td>
+<td align="right">25</td>
+<td align="right">320</td>
+</tr>
+<tr class="odd">
+<td align="left">out</td>
+<td align="right">18</td>
+<td align="right">316</td>
+</tr>
+<tr class="even">
+<td align="left">fev</td>
+<td align="right">14</td>
+<td align="right">311</td>
+</tr>
+<tr class="odd">
+<td align="left">out</td>
+<td align="right">10</td>
+<td align="right">310</td>
+</tr>
+<tr class="even">
+<td align="left">out</td>
+<td align="right">25</td>
+<td align="right">302</td>
+</tr>
+<tr class="odd">
+<td align="left">out</td>
+<td align="right">26</td>
+<td align="right">294</td>
+</tr>
+<tr class="even">
+<td align="left">out</td>
+<td align="right">28</td>
+<td align="right">290</td>
+</tr>
+<tr class="odd">
+<td align="left">dez</td>
+<td align="right">20</td>
+<td align="right">287</td>
+</tr>
+<tr class="even">
+<td align="left">set</td>
+<td align="right">13</td>
+<td align="right">285</td>
+</tr>
+</tbody>
+</table>
+<p>Agora sim! Das cinco maiores datas de estreia dentro de um ano,
+excluindo o primeiro dia de cada mês, há dois importantes dias
+comemorativos, dentre os quais o dia de Natal e o dia de São Valentim,
+quando se comemora o Dia dos Namorados em muitas partes do mundo. Por
+sua vez, o primeiro lugar fica por conta do dia das Bruxas, o popular
+Halloween, também comemorado mundialmente no dia 31 de outubro.</p>
+</div>
+<div id="e-os-países" class="section level1">
+<h1>E os países?</h1>
+<p>Quais são os países que mais produzem filmes no mundo segundo o
+IMDB?</p>
+<p>Mais uma vez, selecionaremos as colunas de interesse, separamos a
+coluna de países e retiramos os valores nulos, de forma que cada país
+conte individualmente para cada filme. Voltamos a usar a função que
+agrupa o número total de filmes a partir de uma coluna e usamos
+<code>distinct</code> para reorganizar a tibble.</p>
+<pre class="r"><code>imdb_paises &lt;- imdb_completa |&gt;
+  select(titulo_original, ano, pais) |&gt;
+  separate_rows(pais, sep = &quot;\\, &quot;) |&gt;
+  drop_na(pais) |&gt;
+  filmes_lancados_total(pais) |&gt;
+  distinct(pais, filmes) |&gt;
+  arrange(desc(filmes)) |&gt;
+  head (5)</code></pre>
+<p>Tabela 4: Os países que mais produziram filmes no mundo
+(1894-2020)</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">pais</th>
+<th align="right">filmes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">USA</td>
+<td align="right">34325</td>
+</tr>
+<tr class="even">
+<td align="left">France</td>
+<td align="right">8311</td>
+</tr>
+<tr class="odd">
+<td align="left">UK</td>
+<td align="right">7490</td>
+</tr>
+<tr class="even">
+<td align="left">India</td>
+<td align="right">6373</td>
+</tr>
+<tr class="odd">
+<td align="left">Italy</td>
+<td align="right">5056</td>
+</tr>
+</tbody>
+</table>
+<p>Sem maiores surpresas, o primeiro lugar é dos Estados Unidos, onde se
+localiza a longeva indústria de Hollywood. Em seguida, tem-se a França,
+local onde o cinema floresceu como invenção pelas mãos dos irmãos
+Lumière. O intruso não-ocidental da lista é a Índia, cuja fama de sua
+Bollywood é mundial. Assim como Reino Unido e França, o que une os
+países que mais produzem filmes no mundo , portanto, é o fato de que
+suas indústrias são muito bem assentadas para o consumo interno, de modo
+que há o hábito de demanda relevante por cinema nesses países.</p>
+<div id="e-as-moedas" class="section level2">
+<h2>E as moedas?</h2>
+<p>Muitos países trocaram de moeda nas últimas décadas, principalmente
+após a adoção do Euro pela União Europeia. Assim, tem-se em mãos a
+pertinente pergunta: quantos padrões monetários aparecem na base de
+dados <code>imdb_completa</code> ?</p>
+<p>Para tal, façamos a contagem de moedas individualmente para as
+colunas relativas ao orçamento e receita. Para começar, selecionamos as
+variáveis que nos interessa, excluindo os valores nulos. Com ajuda de
+uma expressão regular, extraíremos apenas os padrões monetários que
+iniciam cada coluna. Repetimos os passos usados anteriormente ao usar a
+função <code>filmes_lancados_total</code> e <code>distinct</code> para
+reorganizarmos aquilo que nos interessa. Por fim, iremos confirmar se há
+o mesmo número de fillmes em ambas as colunas de interesse.</p>
+<pre class="r"><code>imdb_orcrec &lt;- imdb_completa |&gt;
+  select(titulo_original, ano, orcamento, receita) |&gt;
+  drop_na (c(&quot;orcamento&quot;, &quot;receita&quot;))
+
+regex = &quot;[A-Z|\\$]+(?=\\s)&quot;
+
+# A-Z maicusculo, |, caractere monetário relativo ao dólar.
+
+
+imdb_moedas &lt;- imdb_orcrec |&gt;
+  mutate(moeda_orc = str_extract(orcamento, regex),
+         moeda_rec = str_extract(receita, regex)) |&gt;
+  select(titulo_original, ano, moeda_orc, moeda_rec)
+
+
+imdb_orcamento &lt;- imdb_moedas |&gt;
+  filmes_lancados_total(moeda_orc) |&gt;
+  distinct(moeda_orc, filmes) |&gt;
+  arrange(desc(filmes))
+
+imdb_receita &lt;- imdb_moedas |&gt;
+  filmes_lancados_total(moeda_rec) |&gt;
+  distinct(moeda_rec, filmes)
+
+# 
+
+n_filmes_orc &lt;- imdb_orcamento |&gt;
+  mutate(filmes_em_orcamento = sum(filmes),
+         filmes_em_receita = sum(filmes)) |&gt;
+  select(filmes_em_orcamento, filmes_em_receita) |&gt;
+  distinct(filmes_em_orcamento, filmes_em_receita)
+
+n_filmes_orc$filmes_em_orcamento == n_filmes_orc$filmes_em_receita</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p>Isto posto, podemos dizer que os mesmos filmes que fazem parte de
+<code>imdb_orcamento</code> compõem também <code>imdb_receita</code>.
+Como visto abaixo, a única unidade monetária presente nas receitas do
+IMDB é relativa ao dólar, o que pode ser explicado pelo fato de um mesmo
+filme poder ser lançado em várias partes do mundo ao longo do tempo.
+Neste caso, a padronização monetária facilita a vida tanto de nós,
+analistas, quanto a daqueles que efetivamente colocam seu dinheiro em
+jogo nas maiores indústrias de cinema do mundo.</p>
+<pre class="r"><code>imdb_receita</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##   moeda_rec filmes
+##   &lt;chr&gt;      &lt;int&gt;
+## 1 $          12762</code></pre>
+<p>Agora vamos ao que interessa: na tabela abaixo, há uma relação com os
+padrões monetários mais abundantes no cinema, segundo o IMDB. De todas
+as 62 moedas presentes, as mais recorrentes são dólar, euro e rúpia,
+oriundas de Estados Unidos, União Europeia e Índia, respectivamente,
+locais que reconhecidamente contam com indústrias bem estabelecidas de
+cinema.</p>
+<pre class="r"><code>tabela_orc &lt;- imdb_orcamento |&gt;
+  head(3) |&gt;
+  rename(moeda = moeda_orc) |&gt;
+  mutate(regiao = c(&quot;Estados Unidos&quot;, &quot;União Europeia&quot;, &quot;Índia&quot;)) |&gt;
+  select(moeda, regiao, filmes)</code></pre>
+<p>Tabela 5: Os padrões monetários mais recorrentes no IMDB</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">moeda</th>
+<th align="left">regiao</th>
+<th align="right">filmes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">$</td>
+<td align="left">Estados Unidos</td>
+<td align="right">9025</td>
+</tr>
+<tr class="even">
+<td align="left">EUR</td>
+<td align="left">União Europeia</td>
+<td align="right">1820</td>
+</tr>
+<tr class="odd">
+<td align="left">INR</td>
+<td align="left">Índia</td>
+<td align="right">335</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="gêneros-e-lucro" class="section level2">
+<h2>Gêneros e lucro</h2>
+<p>Por falar em padrões monetários, vamos explorar um pouco mais a nossa
+base de dados. Assim, considerando apenas valores em dólar, qual o
+gênero do IMDB que concentra maior lucro?</p>
+<p>Primeiramente, repetiremos o passo inicial de outrora ao selecionar
+as colunas que nos interessam. A longa lista em <code>select</code> se
+justifica pelo fato de que voltaremos à <code>imdb_orcam_rec</code>
+futuramente. Assim, comecemos de fato descartando os valores nulos
+dentro das colunas de orçamento e receita. Em seguida, com ajuda de uma
+expressão regular, filtramos para que somente os filmes cujo orçamento
+estejam dolarizados apareçam.</p>
+<p>Além disso, com a mão de outra expressão regular, descartamos o
+padrão monetário norte-americano, de forma que as colunas sejam
+preenchidas apenas por valores númericos. Dessa forma, estamos livres
+para criar uma nova variável chamada <code>lucro</code>.</p>
+<p>Como temos valores monetários que se alteram ao longo do tempo,
+teremos de trazer os valores de lucro para o presente. Com ajuda do
+<code>priceR</code>, deflaciona-se a coluna relativa ao lucro a valores
+correntes em dólar americano de 2020 – cujo processo não será estendido
+por aqui, preferindo-se carregar apenas o arquivo .rds com valores já
+deflacionados. Em seguida, organizamos a tibble que responde a nossa
+pergunta ao separarmos a coluna de gênero, de modo que, tal qual
+anteriormente, tenhamos um filme para cada agrupamento de forma
+individual e uma nova coluna relativa ao lucro total de cada gênero.</p>
+<pre class="r"><code>regex_dolar = &quot;^[\\$]&quot;
+regex_num = &quot;\\(?[0-9,.]+&quot;
+
+imdb_orcam_rec &lt;- imdb_completa |&gt;
+  select(titulo_original,
+         ano,
+         data_lancamento,
+         nota_imdb,
+         direcao,
+         elenco,
+         genero,
+         orcamento,
+         receita) |&gt;
+  drop_na(c(&quot;orcamento&quot;, &quot;receita&quot;)) |&gt;
+  filter (str_detect(orcamento, regex_dolar)) |&gt;
+  mutate(orcamento = as.double(str_extract(orcamento, regex_num)),
+         receita = as.double(str_extract(receita, regex_num)),
+         lucro = receita - orcamento)
+
+# A partir da linha 31 do arquivo &quot;03_tratamento_dolar.R&quot; o uso do priceR
+# é exemplificado.
+
+imdb_orcam_rec &lt;- readRDS(&quot;data/rds/imdb_orc_rec.rds&quot;)
+
+
+genero_lucro_real &lt;- imdb_orcam_rec |&gt;
+  separate_rows(genero, sep = &quot;\\, &quot;) |&gt;
+  group_by(genero) |&gt;
+  summarise(lucro_soma_genero = sum(lucro_real)) |&gt;
+  arrange(desc(lucro_soma_genero)) |&gt;
+  head(5) |&gt;
+  mutate(genero = c(&quot;Aventura&quot;,
+                    &quot;Ação&quot;,
+                    &quot;Comédia&quot;,
+                    &quot;Drama&quot;,
+                    &quot;Animação&quot;))</code></pre>
+<p>Com ajuda do <code>ggplot</code>, podemos fazer um gráfico que
+responda a pergunta. Para tal, temos o auxílio do pacote
+<code>forcats</code>, que transforma em fator cada gênero
+cinematográfico a partir do seu lucro total, de modo que tenhamos um
+gráfico em formato decrescente, do maior lucro por gênero até o menor,
+facilitando a leitura da informação.</p>
+<pre class="r"><code>grafico_lucro_generos &lt;- genero_lucro_real |&gt;
+  mutate(genero = forcats::fct_reorder(genero, lucro_soma_genero)) |&gt;
+  ggplot()+
+  aes(x = lucro_soma_genero, y = genero) +
+  geom_col ()+
+  scale_x_continuous (labels = scales::dollar_format())+
+  labs (x = &quot;lucro total acumulado (em dólares americanos)&quot;,
+        y = &quot;gêneros&quot;,
+        caption = &quot;Fonte: IMDB&quot;)</code></pre>
+<p>Gráfico 1: Os gêneros mais lucrativos do cinema</p>
+<pre class="r"><code>grafico_lucro_generos + theme_gray()</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABgAAAAPACAMAAADE4EJKAAABnlBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYzMzM6AAA6AGY6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kJA6kLY6kNtNTU1NTW5NTY5Nbm5Nbo5NbqtNjshZWVlmAABmADpmOgBmOjpmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtttmtv9uTU1uTW5ubk1ubm5ubo5ujo5ujqtujshuq8huq+SOTU2OTW6Obk2Obm6Ojk2Ojo6Oq6uOq8iOq+SOyOSOyP+QOgCQOjqQOmaQZjqQZmaQZpCQkDqQkGaQkLaQttuQ27aQ2/+rbk2rbm6rjm6rq46ryOSr5OSr5P+2ZgC2Zjq2kDq2kGa2kJC2tra2ttu225C229u22/+2/7a2///Ijk3Ijm7Iq27Iq47IyI7I5OTI5P/I///bkDrbkGbbkJDbtmbbtpDbtrbb25Db27bb29vb2//b/9vb///kq27kq47kyI7kyKvkyMjk5Kvk5Mjk5P/k/8jk///r6+v/tmb/yI7/25D/27b/29v/5Kv/5Mj/5OT//7b//8j//9v//+T///+hWwZ6AAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3d/4McxZnf8RHgyBvjGC7uBaTo8JcLQXtnDg6duMAhXewk51jBDrIdX85hxcWgC774CLJwzlG0Eiuk3fmvM/1lvjw9Pd1S1fN0VVe9Xz+Admd2qp+tqucz0/NlZ3MAQJZmoQ8AABAGAQAAmSIAACBTBAAAZIoAAIBMEQAAkCkCAAAyRQAAQKYIAADIFAEAAJkiAAAgUwQAAGSKAACATE0iAP6fB7+fnpzMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kEQBpyazazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4EkAiAtmVWbWbmhD2BMzK3RQBIBkJbMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kEQBpyazazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4EkAiAtmVWbWbmhD2BMzK3RQBIBkJbMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kEQBpyazazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4EkAiAtmVWbWbmhD2BMzK3RQFL6AfCvACAZBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTBAABACBTkQXA6bXizSe5+t+98cRDEAAAUIksAI4PinN3Hv/qR8X5Jx6CAACASmQBcPjCX+y///hXJwAAwFlcAfDo0rnbT9LTCQAAcBZXABwVbz669MLH5T8PmycDblU9/sF7B0Xx2kf1BVdu/0lRvP5R+YTBwvnlVatrLm7h9kHx0uJRxOdvLS588Z2tE0oEAABU4gqAw/33ywZfZ0F1537R5K9UTw2U9q9UAfC96osXPu4OgD9dXPfcnfmNorb1EIEAAIBKVAFwfLDo3Ef108DNI4Hjg8X/Hl0q3rgzP/2wKL91uGjqd+aLu/lXlikhA6D+8aNi/yeL/90uVk8pfLXhdYShpwsA9Hi1wzbfALhVdvJHl+qeXT8SqLr6reZ+fHX5Yd3hq67fFQDLn66+Vz+AqBAAACB4tcM2zwA4vVbd6W96d9XcqwZ+eq25G189Qjis06Bp99sBsH4Z6Ze/+/HlYhUAS5wCAoBKTKeAjg/O152/yoHqHFB1Bqg+19+c+G+1+50B8OBy8yMEAAB0iikAbq36fNm0q/v9VVN/dOlJAuB8EyZFsf/a27+6RgAAQLeIAmCjzzcned6sT+EvnxWoPVYALH7w/J25eA6AAAAAIaIAWL2r6/igavjHB+f+T3kGqNXFHysAlpmxCBUCAAA6RRQAh8te3Xwi3Om1/R8vHwvUJ/arE/zb7b5+kVB5p38rAI6KrQ+XIwAAoBJPACzfArxu+LeWT+Eu7sef+2jevPZ/+ynfRZd/d/7gWrF1Cuj0w4IAAIAd4gmA5Yv959UzuFfq/zWZcFS/E7goP/x5MwCOq3f91q8SeuF/bD4JfFT/wLkPt94KTAAAQCWaANg80V+fzVn+r1R/FlD53l4RAPPfVh8fffpeUbz00dFmAMw/v1wUL74r3hdAAADAhmgCYDQEAABUCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCAACAECmCIAnq9fv9zUxmVWbWbmhD2BMzK3RQBIBkJbMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kEQBpyazazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4EkAiAtmVWbWbmhD2BMzK3RQBIBkJbMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kEQBpyazazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4Gk9AMg9J9vABAZpWaqiADo4VVv6LUGIDJKzVQRAdDDq97Qaw1AZJSaqSICoIdXvaHXGoDIKDVTRQRAD696Q681AJFRaqaKCIAeXvWGXmsAIqPUTBURAD286g291gBERqmZKiIAenjVG3qtAYiMUjNVRAD08Ko39FoDEBmlZqqIAOjhVW/otQYgMkrNVBEB0MOr3tBrDUBklJqpIgKgh1e9odcagMgoNVNFBEAPr3pDrzUAkVFqpooIgB5e9YZeawAio9RMFREAPbzqDb3WAERGqZkqIgB6eNUbeq0BiIxSM1VEAPTwqjf0WgMQGaVmqogA6OFVb+i1BiAySs1UEQHQw6ve0GsNQGSUmqkiAqCHV72h1xqAyCg1U0UEQA+vekOvNQCRUWqmigiAHl71hl5rACKj1EwVEQA9vOoNvdYAREapmSoiAHp41Rt6rQGIjFIzVUQA9PCqN/RaAxAZpWaqiADo4VVv6LUGIDJKzVQRAdDDq97Qaw1AZJSaqSICoIdXvaHXGoDIKDVTRQRAD696Q681AJFRaqaKCIAeXvWGXmsAIqPUTBURAD286g291gBERqmZKiIAenjVG3qtAYiMUjNVRAD08Ko39FoDEBmlZqqIAOjhVW/otQYgMkrNVBEB0MOr3tBrDUBklJqpIgKgh1e9odcagMgoNVNFBEAPr3pDrzUAkVFqpooIgB5e9YZeawAio9RMFREAPbzqDb3WAERGqZkqIgB6eNUbeq0BiIxSM1VEAPTwqjf0WgMQGaVmqogA6OFVb+i1BiAySs1UEQHQw6ve0GsNQGSUmqkiAqCHV72h1xqAyCg1U0UEQA+vekOvNQCRUWqmigiAHl71hl5rACKj1EwVEQA9vOoNvdYAREapmSoiAHp41Rt6rQGIjFIzVUQA9PCqN/RaAxAZpWaqiADo4VVv6LUGIDJKzVQRAdDDq97Qaw1AZJSaqSICoIdXvaHXGoDIKDVTRQRAD696Q681AJFRaqaKCIAeXvWGXmsAIqPUTBURAD286g291gBERqmZKiIAenjVG3qtAYiMUjNVRAD08Ko39FoDEBmlZqqIAOjhVW/otQYgMkrNVBEB0MOr3tBrDUBklJqpIgKgh1e9odcagMgoNVNFBEAPr3pDrzUAkVFqpooIgB5e9YZeawAio9RMFREAPbzqDb3WAERGqZkqIgB6eNUbeq0BiIxSM1WUeACcXive7LzgRrH/zp2j/fd7f9qr3tBrDUBklJqposQD4PigOHen4/u3isoLH/f+tFe9odcagMgoNVNFiQfA4Qt/0Xkv/3D//QfvFftX+n/aq97Qaw1AZJSaqaK0A+DRpXO3i/POP+5Vb+i1BiAySs1UUdoBcFS8+ejS6jzP55eL4sV3m3+/VSy+eKc+PbR4MFAUr3+09eNe9YZeawAio9RMFaUdAIf7788Pi+ZET3Pev3pS+Eb97/rRwdFB9e/tE0Je9YZeawAio9RMFSUdAMcH5+4sHgXUTwMfHxR/dmd+u3ri96jY/8niW7eL8gmCxQWv/35+eqNYPVvw1YbX4KHXGoDIeDa0hIwSALfKu/uPLtWN/VZ9d796QHBYPw44vVZ+0Vyw+Oby2QICAIA+r46SlDEC4PRadfq/7vZ1s9/w5e9+fLlYfG91wdHWK0a9HvGEXmsAIqN0OkVRyqeAjg/qU/zVWZ/lA4Hag8vNkwBX1hdsPF3c8Ko39FoDEBmlZqoo5QBonvWt2rxs78cHRbH/2tu/ulYFQHMBAQDAklIzVZRwADy6tAqA8/IRwOm14vydeXNaiEcAAEah1EwVJRwAR8sndY8PFi1+8zmAZc9fRATPAQAYiVIzVZRwAKzeAFB/IlzzYp/yf8sAOCo2Lth4FdCSV72h1xqAyCg1U0XpBsDGGZ1b5X37+n0Anx/Ud/rP35mffli/Lax+H8CX7xVbnxrkVW/otQYgMkrNVFG6AXBrfYf++KB+vf/qzb9H9T/PfVh/xTuBAdhTaqaKkg2AzXP+5T3+ufgsoOafzWl/PgsIgD2lZqoo2QDocvzH/X8Aps2r3tBrDUBklJqpoqwC4FZRvPEk1/eqN/RaAxAZpWaqKKsAWH44xOPyqjf0WgMQGaVmqiinADgsipee6ByQV72h1xqAyCg1U0U5BcAT86o39FoDEBmlZqqIAOjhVW/otQYgMkrNVBEB0MOr3tBrDUBklJqpIgKgh1e9odcagMgoNVNFBEAPr3pDrzUAkVFqpooIgB5e9YZeawAio9RMFREAPbzqDb3WAERGqZkqIgB6eNUbeq0BiIxSM1VEAPTwqjf0WgMQGaVmqogA6OFVb+i1BiAySs1UEQHQw6ve0GsNQGSUmqkiAqCHV72h1xqAyCg1U0UEQA+vekOvNQCRUWqmigiAHl71hl5rACKj1EwVEQA9vOoNvdYAREapmSoiAHp41Rt6rQGIjFIzVUQA9PCqN/RaAxAZpWaqiADo4VVv6LUGIDJKzVQRAdDDq97Qaw1AZJSaqSICoIdXvaHXGoDIKDVTRQRAD696Q681AJFRaqaKCIAeXvWGXmsAIqPUTBURAD286g291gBERqmZKiIAenjVG3qtAYiMUjNVRAD08Ko39FoDEBmlZqqIAOjhVW/otQYgMkrNVBEB0MOr3tBrDUBklJqpIgKgh1e9odcagMgoNVNFBEAPr3pDrzUAkVFqpooIgB5e9YZeawAio9RMFREAPbzqDb3WAERGqZkqIgB6eNUbeq0BiIxSM1VEAPTwqjf0WgMQGaVmqogA6OFVb+i1BiAySs1UEQHQw6ve0GsNQGSUmqkiAqCHV72h1xqAyCg1U0UEQA+vekOvNQCRUWqmigiAHl71hl5rACKj1EwVEQA9vOoNvdYAREapmSoiAHp41Rt6rQGIjFIzVUQA9PCqN/RaAxAZpWaqiADo4VVv6LUGIDJKzVQRAdDDq97Qaw1AZJSaqSICoIdXvaHXGoDIKDVTRQRAD696Q681AJFRaqaKCIAeXvWGXmsAIqPUTBURAD286g291gBERqmZKiIAenjVG3qtAYiMUjNVRAD08Ko39FoDEBmlZqqIAOjhVW/otQYgMkrNVBEB0MOr3tBrDUBklJqpIgKgh1e9odcagMgoNVNFBEAPr3pDrzUAkVFqpooIgB5e9YZeawAio9RMFREAPbzqDb3WAERGqZkqIgB6eNUbeq0BiIxSM1VEAPTwqjf0WgMQGaVmqogA6OFXr9ZvbhIyqzazckMfwJiYW6OBJAIgLZlVm1m5oQ9gTMyt0UASAZCWzKrNrNzQBzAm5tZoIIkASEtm1WZWbugDGBNzazSQRACkJbNqMys39AGMibk1GkgiANKSWbWZlRv6AMbE3BoNJBEAacms2szKDX0AY2JujQaSCIC0ZFZtZuWGPoAxMbdGA0kEQFoyqzazckMfwJiYW6OBJAIgLZlVm1m5oQ9gTMyt0UASAZCWzKrNrNzQBzAm5tZoIIkASEtm1WZWbugDGBNzazSQRACkJbNqMys39AGMibk1GkgiANKSWbWZlRv6AMbE3BoNJBEAacms2szKDX0AY2JujQaSCIC0ZFZtZuWGPoAxMbdGA0npB0Dovz0BwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nJ9IAOPmHX/yNWV9/bF71hl76AFwalc+2n5zoAuD+v/9sPn/48mw2e+ZHxv19kFe9oZc+AJdG5bPtJye2ALg5e+qD+fz6rFT+KyivekMvfQAujcpn209OZAFwt2r79/ZmX/ns/oXZN81bfD+vekMvfQAujcpn209OZAFwfdH5yxg486Pyv+W/Q/KqN/TSB+DSqHy2/eTEFQAnV8vO38TAwwuhzwF51Rt66QNwaVQ+235y4gqAuuc/vDA7OycAAHhyaVQ+235yYgyAe3uzi3MCAIAnl0bls+0nJ64AqE8B3ayeAuA5AAB+XBqVz7afnLgCYH59drZ8+U/Z+XkVEAA/Lo3KZ9tPTmQBcLd6A8Ds4vzk+7P6cUBIXvWGXvoAXBqVz7afnMgCYH6z7P9nqyeCz1w07u+DvOoNvfQBuDQqn20/ObEFwPz+D777w8X/Hv7hc7+07e6Pwave0EsfgEuj8tn2kxNdAMTEq97QSx+AS6Py2faTQwD08Ko39NIH4NKofLb95MQXAF/8/NnZ7Myzr3xq29wfh1e9oZc+AJdG5bPtJye6ALg5Wwr9IlACAJg4l0bls+0nJ7YAKPv/09/4zre/FkMCeNUbeukDcGlUPtt+ciILgPKDoOtX/9y/yvsAAHhxaVQ+235yIguA6+uPfzi5Wn0kXEhe9YZe+gBcGpXPtp+cuAKg+Tjo2r09PgsIgAeXRuWz7ScnrgAQHwDKp4EC8OLSqHy2/eQQAD286g299AG4NCqfbT85cQXAydXqLwHU+DhoAF5cGpXPtp+cuAKAJ4EB6HFpVD7bfnIiC4B7e7Nn/rb6129e5mWgALy4NCqfbT85kQVA/UbgZ599Noq3AnvVG3rpA3BpVD7bfnJiC4D5J3vNJ0GcedW4vQ/zqjf00gfg0qh8tv3kRBcA85Nff3vxCOAbPwz8BHDJq97QSx+AS6Py2faTE18ARMSr3tBLH4BLo/LZ9pMTWQBcj+DvgK151Rt66QNwaVQ+235y4gqAhxc23gcQnle9oZc+AJdG5bPtJye2AAj95l/Bq97QSx+AS6Py2faTE1cAiA+DC8+r3tBLH4BLo/LZ9pMTVwDMby7/HEAUvOoNvfQBuDQqn20/OZEFwBc/q/4gWOO7fBYQAHcujcpn209OXAHw8MJsU+gnBLzqDb30Abg0Kp9tPzkEQA+vekMvfQAujcpn209OXAEQGa96Qy99AC6NymfbTw4B0MOr3tBLH4BLo/LZ9pMTZQCcfGrY1Z+AV72hlz4Al0bls+0nJ74A+PW3ypP/D//wlfCfBudVb+ilD8ClUfls+8mJLQBOflo/+/vwwuyZ4G8K9qo39NIH4NKofLb95MQWANdns2f+aO+pD07+ahb8TwITAMC0uTQqn20/OZEFwN3Z7NXmE4E+2ev9YLh/eu+gKPZf/+ixu/lRsf+++PL8fH6reLPvR7zqDb30Abg0Kp9tPzmRBcD18u9ANh8Jd7Pnj8KfXisavR1c/sSVza8JACB5Lo3KZ9tPTlwBUH8YXBMA9/Z2vhHs0aXixXfvzOdf3njsBDhqXbEKgAFe9YZe+gBcGpXPtp+cuAKgbv1NAPR8NvRhce5O/a9bxQsfDzbyLgQAkDyXRuWz7SdnkgFwfLDq+qfX6nv2D94riqJ+RuCwuHJ8udj/y/n8twfFiz+Z1xcfFMVrzRMGtw+K/Xc3TwF9/tbih1985w4BACTFpVH5bPvJiSsATq6WT/w2nf/uzpcBHW6czvmyattHB9UTAvtXqkvfrr5687D61vtVYqwvnlffLv7tOgBuNE8nbD0k8Ko39NIH4NKofLb95MQVAPUTv3UALMJgx5PA7edzqwb/+u/npzeqdr9o8G/cOf1w0e/fnT+4Vrb1R5cW35kvvlU+cDgqv396WKwCYPGN8mHC7fWrhL7a6B7+MYVe+gC8tjDs7AiAe3uz5z+rAuD+y7Ndfx3s0SXxgs552cjre++H5f/rJwgWmVDeuz8qv1heXPX7+uHD6bVVADSPJzZihQAAkuC1hWFn1xvBbs5ms2f3znzja4v/f3PHdbYCYNW7q3ZfN/TmSuV3Tq811z8+OHdn+cO3xMtAv/zdjy8X7ccVnAICps3lVIXPtp+cyE4Bzed/v7f8awC7+v981dC3EuHRpRc+7gqA5ZsGihc+rq4yF+8DeHC5uZQAAJLi0qh8tv3kRBcA8y9+/uyi+z/93O6/Dbz1HMCyqS8D4IoMgEeXNgJg+QqidQCUzxDvv/b2r7aeWSAAgGlzaVQ+235y4guAx3Br4wU7R8Ubd9qPALYCYOMRw9YjgPLZgDtdsUIAABPn0qh8tv3kTDIANt4HUD3v234OoBUAorVvPQew/MbicQIBACTFpVH5bPvJiTEA/nFp59+FWb8TuH7xZutVQK0AWFxcX33jOeL1q4CWAXC0/akSXvWGXvoAXBqVz7afnNgC4P73H+ePwi8/C6h8/2/Ztev3AXz5XvM+gHYALK5+7qPqHcBXmteHnt4o5Cmg8n0DBACQFpdG5bPtJyeyAHh4YfY4AbB+4U7TtOU7gdsBsLy4eKO87q3WO4GP6svOfbj1VmCvekMvfQAujcpn209OZAFwczZ75l//Yulvev4izOdvib8HID8LqB0AzWcB1Z8LNL/9J/KzgD5fpMmL7y6vSgAAqXBpVD7bfnLiCoDdH/8QhFe9oZc+AJdG5bPtJyeuAHh4YdfHPwThVW/opQ/ApVH5bPvJiS0Adp/2D8Cr3tBLH4BLo/LZ9pMTVwDUfxEsGl71hl76AFwalc+2n5y4AmB+c/cnAAXgVW/opQ/ApVH5bPvJiSwAFg8BXjXv64/Nq97QSx+AS6Py2faTE1cAnPzg27PZmW98p/HdnpeBjsGr3tBLH4BLo/LZ9pMTVwDI94H1vBFsHF71hl76AFwalc+2nxwCoIdXvaGXPgCXRuWz7ScnrgCIjFe9oZc+AJdG5bPtJ4cA6OFVb+ilD8ClUfls+8mJMgBOdn4O9Li86g299AG4NCqfbT858QXAr79Vnvx/+IevBH4J0JwAACbOpVH5bPvJiS0ATn5aP/v78MLsmeCfCuFVb+ilD8ClUfls+8mJKQD+56LjX5/Nnvmjvac+OPmr2ewroR8DeNUbeukDcGlUPtt+cuIJgJOrT30wvzubvdp8JNwne7OLo7T53bzqDb30Abg0Kp9tPznRBMD9l8uX/V8vPwuo+UzQm8H/NoBXvaGXPgCXRuWz7ScnlgAoz/n/svk00CYA7u3xRjAAHlwalc+2n5x4AuDV+bL1NwEQ/o8DeNUbeukDcGlUPtt+cuIJgDPPf0YAAFDk0qh8tv3kxBIA5Z+Df+qDk6vlE79N578b/GVAXvWGXvoAXBqVz7afnGgCoD7lXz3xWwdABH8g3qve0EsfgEuj8tn2kxNPAMxP/t0HixSYPf9ZFQD3X54F//OQXvWGXvoAXBqVz7afnIgCoHJzNps9u3fmG19b/D/4X4f0qjf00gfg0qh8tv3kxBYA87/fW/41gOD9nwAAps2lUfls+8mJLgDmX/z82UX3f/q5X9o298fhVW/opQ/ApVH5bPvJiS8AIuJVb+ilD8ClUfls+8khAHp41Rt66QNwaVQ+235yIguAL/5xk3mHH+BVb+ilD8ClUfls+8mJKwBafxR+Nns66J+F8ao39NIH4NKofLb95EQeALOgbwbwqjf00gfg0qh8tv3kxBUAJ//ws0XL/+4vfvGLH+zNzrzyi/9Y/XlI+06/g1e9oZc+AJdG5bPtJyeuACgfAixf/v9J1frvXwj4fgCvekMvfQAujcpn209OZAFwfaPd138QJuRHwnnVG3rpA3BpVD7bfnLiCoD6D8I07u2VrT/kn4Xxqjf00gfg0qh8tv3kxEwsgFEAACAASURBVBUA4k8AiD8OEIRXvaGXPgCXRuWz7ScntgAQjwAIAAAeXBqVz7afnLgCYH59428AXOc5AAA+XBqVz7afnMgC4O5s9nzd709+Oiv/Otgne7wKCIAbl0bls+0nJ7IAWNztn82+/p3vfKf8RNCz1RvDAr4TzKve0EsfgEuj8tn2kxNbAJR3/Bv/svwj8bMzF427fA+vekMvfQAujcpn209ObAGw+nsAr3y6+PfJD/6azwIC4MilUfls+8mJLwAi4lVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHV72hlz4Al0bls+0nhwDo4VVv6KUPwKVR+Wz7ySEAenjVG3rpA3BpVD7bfnIIgB5e9YZe+gBcGpXPtp8cAqCHX71av7lJyKzazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4EkAiAtmVWbWbmhD2BMzK3RQBIBkJbMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kEQBpyazazMoNfQBjYm6NBpIIgLRkVm1m5YY+gDExt0YDSQRAWjKrNrNyQx/AmJhbo4EkAiAtmVWbWbmhD2BMzK3RQBIBkJbMqs2s3NAHMCbm1mggiQBIS2bVZlZu6AMYE3NrNJBEAKQls2ozKzf0AYyJuTUaSCIA0pJZtZmVG/oAxsTcGg0kpR8Aof8UBjBVSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQQAgG5KPcdt4xIANgNJBACAbko9x23jEgA2A0kEAIBuSj3HbeMSADYDSQYB8OhSUfveO7/XuUWvekNvImCqlHqO28YlAGwGkiwDoCj231W5Ra96Q28iYKqUeo7bxiUAbAaSTALghY+rf/zTe0VxReMWveoNvYmAqVLqOW4blwCwGUiyDID5/Fax+qcPr3pDbyJgqpR6jtvGJQBsBpJsA+D0WvkQ4Kh48/ZB8dL78/nnbxVF8eI7dxYXHRZXji8X+385n//2oHjxJ9XVNy4mAIDQlHqO28YlAGwGGjMAFg8BzpcB8KcHRXHuzvxG89TA+SoA3j4o//3mYfVkwSIdxMUEABCaUs9x27gEgM1AowbA8cGi7x9V3b8Mgv3ynv7tqt0v+v4bd04/rJ4ofnCtzomNiytfbXgdTuhNBEyV18bDFJgHwOLfR01LPyzeLP9Xnxc6rELh+KD63lH5hbi4QgAAAXltPEzBOAFwbnVa/8vf/fhyUQfAm9V1q2xYXWN1seD1iCf0JgKmSumsg9vG5RSQzUABA+DB5eYsf3cAbF5MAAChKfUct41LANgMNGoAVJ39qHla9/igKPZfe/tXzSmgK60AEBcTAEBoSj3HbeMSADYDjRoAzauAqgA4vVacvzNfPwfQCgB5MQEAhKbUc9w2LgFgM9CYAfDoUv0+gPPzdbNvvrkVAPJiAgAITannuG1cAsBmoDED4EZ1br8VAEdFefp/ZwDUFxMAQGhKPcdt4xIANgONFgCn//RW0bT3jVNA5Uv/OwNAXkwAAKEp9Ry3jUsA2Aw0QgCsPw20OpmzfBL4qP7muQ/Lr7efBBYXEwBAaEo9x23jEgA2A40XAN9rPtVnGQDzzy8XxYvvLt/21Q4AcTEBAISm1HPcNi4BYDOQeQDo86o39CYCpkqp57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4bVwCwGYgiQAA0E2p57htXALAZiCJAADQTannuG1cAsBmIIkAANBNqee4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" width="768" /></p>
+<p>A</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li>O seu relatório deve (ao menos) responder as seguintes
+perguntas:</li>
+</ul>
 <ol style="list-style-type: decimal">
 <li><p>Qual o mês do ano com o maior númedo de filmes? E o dia do
 ano?</p></li>
@@ -1725,6 +2185,7 @@ gênero com maior lucro? E com maior nota média?</p></li>
 <li><p>Dentre os filmes na base <code>imdb_completa</code>, escolha o
 seu favorito. Então faça os itens a seguir:</p></li>
 </ol>
+</div>
 </div>
 <div id="e-agora" class="section level1">
 <h1>2. E agora?</h1>
@@ -1753,7 +2214,7 @@ imdb_avaliacoes &lt;- basesCursoR::pegar_base(&quot;imdb_avaliacoes&quot;)</code
 <h1>Terceiro teste</h1>
 <p>Temos de colocar um código para testar de forma satisfatória a
 ferramenta</p>
-<pre class="r"><code>lucro_real &lt;- readRDS(&#39;data\\rds\\lucro_real.rds&#39;)
+<pre class="r"><code>lucro_real &lt;- readRDS(&quot;data\\rds\\lucro_real.rds&quot;)
 lucro_real |&gt;
   head(10)</code></pre>
 <pre><code>## # A tibble: 10 × 10

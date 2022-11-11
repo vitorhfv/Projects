@@ -1,5 +1,5 @@
 ---
-title: "Um passeio pela história do cinema com o IMDB"
+title: "Um passeio pela história do cinema com o IMDB e o R"
 author: "Vitor H. F. Vieira"
 date: "`r Sys.Date()`"
 output:
@@ -19,18 +19,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # O que é o IMDB?
 
-O IMDB é uma base de dados on-line que reúne informações a respeito de grandes indústrias de entretenimento do mundo, em particular a cinematográfica, que será nosso objeto de estudo neste trabalho. Fundado em 1990, mantém-se até hoje como fonte confiável para obtenção de informações técnicas a respeito da Sétima Arte. Vamos desbravá-lo?
+O IMDB é uma base de dados on-line que reúne informações a respeito das grandes indústrias de entretenimento do mundo, em particular a cinematográfica, que será objeto de estudo neste trabalho. Fundado em 1990, mantém-se até hoje como fonte confiável para obtenção de informações técnicas a respeito da Sétima Arte. Vamos desbravá-lo?
 
-Para tal, carreguemos a base de dados do IMDB mais ampla e o pacote `tidyverse`:
+Para tal, carreguemos a base de dados mais ampla do IMDB chamada `imdb_completa`, formada por mais de oitenta e cinco mil linhas e vinte e uma colunas, que traz informações gerais em relação a milhares de filmes, contemplando toda a história do cinema, desde o final do século XIX até a década 2020. Além disso, carreguemos também o pacote `tidyverse`:
 
 ```{r}
 library (tidyverse)
+
 imdb_completa <- basesCursoR::pegar_base("imdb_completa")
+
+dplyr::glimpse(imdb_completa)
 ```
 
 Neste momento, tentemos explorar a base de dados a partir de algumas perguntas. Qual é o mês do ano com mais estreias cinematográficas, segundo o IMDB? E o dia do ano?
 
-Para responder a essas perguntas, escolhemos a variável de interesse `data_lançamento`, transformando-a em data, e excluímos os valores nulos desta coluna, para que possamos dividi-la em três .
+Para responder a essas perguntas, escolhemos a variável de interesse `data_lançamento`, transformando-a em data, e excluímos os valores nulos desta coluna, para que possamos dividi-la em três.
 
 ```{r}
 imdb_completa2 <- imdb_completa |>
@@ -48,9 +51,9 @@ imdb_data <- imdb_completa2 |>
           dia = lubridate::day(data_lancamento))
 ```
 
-É possível responder às perguntas iniciais de duas formas: uma mais simples e outra mais demorada. Vamos a elas?
+É possível responder às perguntas iniciais de duas formas: uma mais simples e outra mais detalhada. Vamos a elas?
 
-A partir de uma função sobre a qual  calculamos a moda, o termo mais repetido dentro de um vetor, temos:
+A partir de uma função sobre a qual calculamos a moda, o termo mais repetido dentro de um vetor, temos:
 
 ```{r echo=TRUE}
 # A função abaixo busca o termo mais repetido dentro uma coluna. 
@@ -62,9 +65,13 @@ mais_repetido <- function(x) {
 
 mais_repetido(imdb_data$mes)
 ```
+
 Assim, o mês do ano com o maior número de filmes lançados dentre todos os filmes cuja data de estreia é conhecida é o décimo mês do ano, o popular outubro!
 
 Mas, quantos filmes, dentre todos os `r formatC(nrow(imdb_data))` cuja data de lançamento é conhecida, foram lançados no mês de outubro, segundo o IMDB?
+
+Em primeiro lugar, cria-se uma função chamada `filmes_lancados_total`, cujo ofício é reagrupar os dados em questão a partir de um vetor, criando uma nova variável a partir da contagem de observações. Como o novo agrupamento repete a informação relevante para cada filme de forma individual, usemos o `distinct` para descartar o material repetido e ordenemos a nova coluna de maneira decrescente. Por fim, com o `lubridate` iremos transformar o mês em uma classe de `fatores`, de modo que estes sejam representados pelos seus respectivos nomes em português, além de escolhermos as variáveis de interesse com o `select`.
+
 ```{r}
 filmes_lancados_total<- function (data, by, ...) {
   data %>%
@@ -77,24 +84,265 @@ imdb_meses <- imdb_data |>
   filmes_lancados_total (mes) |>
   distinct(mes, filmes) |>
   arrange(desc(filmes)) |>
-  mutate (mes = lubridate::month(mes, label = TRUE),
-          filmes_lancados = filmes) |>
-  select(mes, filmes_lancados)
+  mutate (mes = lubridate::month(mes, label = TRUE)) |>
+  select(mes, filmes)
 ```
 
-|mês | filmes lancados|
-|:---|---------------:|
-|out |            8734|
-|set |            7924|
-|mar |            7435|
-|nov |            7094|
-|abr |            7078|
-|dez |            6618|
+Tabela 1: Os seis meses do ano com mais estreias cinematográficas
 
-Assim, confirmamos que o mês em que mais houve estreias cinematográficas, segundo o IMDB, foi outubro, seguido pelo meses de setembro, março e novembro, apontando uma tendência de lançamentos na segunda metade do ano. Agora vamos além: qual é o dia do ano onde mais há concentração de estreias no cinema?
+| mes | filmes |
+|:----|-------:|
+| out |   8734 |
+| set |   7924 |
+| mar |   7435 |
+| nov |   7094 |
+| abr |   7078 |
+| dez |   6618 |
+
+Portanto, confirmamos que o mês em que mais houve estreias cinematográficas, segundo o IMDB, foi outubro, seguido pelo meses de setembro, março e novembro, apontando uma tendência de lançamentos na segunda metade do ano, como observamos anteriormente. Agora vamos além: qual é o dia, dentre todos aqueles dentro de um ano, em que mais houve concentração de estreias no cinema?
+
+Primeiramente, reaproveitemos do exercício anterior a tibble `imdb_data`, que contempla todos aqueles filmes cuja data está em sua forma completa, dividida por dia, mês e ano. Para tal, vamos reunir os meses aos dias, de forma que haja uma nova coluna chamada `mes_dia`, pela qual reagruparemos os dados com a função `filmes_lançados_total`, utilizada anteriormente. Repetindo os mesmos processos anteriores, transformamos as colunas relativas a dia e mês em classe númerica para que esta última possa ser referida como um fator de meses com o `lubridate`. Assim, temos:
+
+```{r}
+imdb_data2 <- imdb_data |>
+  unite("mes_dia", mes:dia, sep = "-") |>
+  filmes_lancados_total(mes_dia) |>
+  distinct(mes_dia, filmes ) |>
+  separate(mes_dia, c("mes", "dia")) |>
+  mutate(mes = as.double(mes),
+         dia = as.double(dia),
+         filmes_estreia_total = filmes) |>
+  select(mes, dia, filmes) |>
+  arrange(desc(filmes))
+
+# transformando a coluna relativa a mês em data.
+imdb_mes_dia_tibble <- imdb_data2 |>
+  mutate(mes = lubridate::month(mes, label = TRUE)
+         )
+
+```
+
+Tabela 2: Os 10 dias do ano com mais estreias cinematográficas (1894-2020)
+
+| mes | dia | filmes |
+|:----|----:|-------:|
+| out |   1 |    747 |
+| mar |   1 |    657 |
+| set |   1 |    638 |
+| dez |   1 |    634 |
+| abr |   1 |    623 |
+| nov |   1 |    619 |
+| mai |   1 |    598 |
+| fev |   1 |    598 |
+| jan |   1 |    590 |
+| jun |   1 |    575 |
+
+Portanto, de todas as datas dentro um ano o 1º de outubro é aquela que comporta mais estreias cinematográficas. Por outro lado, segundo a tabela acima, as dez maiores datas de estreia são aquelas relativas ao primeiro dia de um mês. Não é um comportamento estranho?
+
+É possível que, dentro do IMDB, o primeiro dia de um mês seja padrão para aquelas estreias cujo o dia é desconhecido, ainda que se conheça o mês de lançamento. Assim, filtraremos apenas o dia de estreia, de modo que seja maior do que 1, contabilizando somente os demais dias.
+
+```{r}
+imdb_mes_dia_tibble_mqu <- imdb_mes_dia_tibble |>
+  filter (dia > 1)
+```
+
+Tabela 3: Os 10 dias do ano com mais estreias cinematográficas (com exceção do dia 1º de cada mês)
+
+| mes | dia | filmes |
+|:----|----:|-------:|
+| out |  31 |    365 |
+| dez |  25 |    320 |
+| out |  18 |    316 |
+| fev |  14 |    311 |
+| out |  10 |    310 |
+| out |  25 |    302 |
+| out |  26 |    294 |
+| out |  28 |    290 |
+| dez |  20 |    287 |
+| set |  13 |    285 |
+
+Agora sim! Das cinco maiores datas de estreia dentro de um ano, excluindo o primeiro dia de cada mês, há dois importantes dias comemorativos, dentre os quais o dia de Natal e o dia de São Valentim, quando se comemora o Dia dos Namorados em muitas partes do mundo. Por sua vez, o primeiro lugar fica por conta do dia das Bruxas, o popular Halloween, também comemorado mundialmente no dia 31 de outubro.
+
+# E os países?
+
+Quais são os países que mais produzem filmes no mundo segundo o IMDB?
+
+Mais uma vez, selecionaremos as colunas de interesse, separamos a coluna de países e retiramos os valores nulos, de forma que cada país conte individualmente para cada filme. Voltamos a usar a função que agrupa o número total de filmes a partir de uma coluna e usamos `distinct` para reorganizar a tibble.
+
+```{r}
+imdb_paises <- imdb_completa |>
+  select(titulo_original, ano, pais) |>
+  separate_rows(pais, sep = "\\, ") |>
+  drop_na(pais) |>
+  filmes_lancados_total(pais) |>
+  distinct(pais, filmes) |>
+  arrange(desc(filmes)) |>
+  head (5)
+```
+
+Tabela 4: Os países que mais produziram filmes no mundo (1894-2020)
+
+| pais   | filmes |
+|:-------|-------:|
+| USA    |  34325 |
+| France |   8311 |
+| UK     |   7490 |
+| India  |   6373 |
+| Italy  |   5056 |
+
+Sem maiores surpresas, o primeiro lugar é dos Estados Unidos, onde se localiza a longeva indústria de Hollywood. Em seguida, tem-se a França, local onde o cinema floresceu como invenção pelas mãos dos irmãos Lumière. O intruso não-ocidental da lista é a Índia, cuja fama de sua Bollywood é mundial. Assim como Reino Unido e França, o que une os países que mais produzem filmes no mundo , portanto, é o fato de que suas indústrias são muito bem assentadas para o consumo interno, de modo que há o hábito de demanda relevante por cinema nesses países.
+
+## E as moedas?
+
+Muitos países trocaram de moeda nas últimas décadas, principalmente após a adoção do Euro pela União Europeia. Assim, tem-se em mãos a pertinente pergunta: quantos padrões monetários aparecem na base de dados `imdb_completa` ?
+
+Para tal, façamos a contagem de moedas individualmente para as colunas relativas ao orçamento e receita. Para começar, selecionamos as variáveis que nos interessa, excluindo os valores nulos. Com ajuda de uma expressão regular, extraíremos apenas os padrões monetários que iniciam cada coluna. Repetimos os passos usados anteriormente ao usar a função `filmes_lancados_total` e `distinct` para reorganizarmos aquilo que nos interessa. Por fim, iremos confirmar se há o mesmo número de fillmes em ambas as colunas de interesse.
+
+```{r}
+imdb_orcrec <- imdb_completa |>
+  select(titulo_original, ano, orcamento, receita) |>
+  drop_na (c("orcamento", "receita"))
+
+regex = "[A-Z|\\$]+(?=\\s)"
+
+# A-Z maicusculo, |, caractere monetário relativo ao dólar.
 
 
-O seu relatório deve (ao menos) responder as seguintes perguntas:
+imdb_moedas <- imdb_orcrec |>
+  mutate(moeda_orc = str_extract(orcamento, regex),
+         moeda_rec = str_extract(receita, regex)) |>
+  select(titulo_original, ano, moeda_orc, moeda_rec)
+
+
+imdb_orcamento <- imdb_moedas |>
+  filmes_lancados_total(moeda_orc) |>
+  distinct(moeda_orc, filmes) |>
+  arrange(desc(filmes))
+
+imdb_receita <- imdb_moedas |>
+  filmes_lancados_total(moeda_rec) |>
+  distinct(moeda_rec, filmes)
+
+# 
+
+n_filmes_orc <- imdb_orcamento |>
+  mutate(filmes_em_orcamento = sum(filmes),
+         filmes_em_receita = sum(filmes)) |>
+  select(filmes_em_orcamento, filmes_em_receita) |>
+  distinct(filmes_em_orcamento, filmes_em_receita)
+
+n_filmes_orc$filmes_em_orcamento == n_filmes_orc$filmes_em_receita
+```
+
+Isto posto, podemos dizer que os mesmos filmes que fazem parte de `imdb_orcamento` compõem também `imdb_receita`. Como visto abaixo, a única unidade monetária presente nas receitas do IMDB é relativa ao dólar, o que pode ser explicado pelo fato de um mesmo filme poder ser lançado em várias partes do mundo ao longo do tempo. Neste caso, a padronização monetária facilita a vida tanto de nós, analistas, quanto a daqueles que efetivamente colocam seu dinheiro em jogo nas maiores indústrias de cinema do mundo.
+
+```{r}
+imdb_receita
+```
+
+Agora vamos ao que interessa: na tabela abaixo, há uma relação com os padrões monetários mais abundantes no cinema, segundo o IMDB. De todas as `r formatC(nrow(imdb_orcamento))` moedas presentes, as mais recorrentes são dólar, euro e rúpia, oriundas de Estados Unidos, União Europeia e Índia, respectivamente, locais que reconhecidamente contam com indústrias bem estabelecidas de cinema.
+
+```{r}
+tabela_orc <- imdb_orcamento |>
+  head(3) |>
+  rename(moeda = moeda_orc) |>
+  mutate(regiao = c("Estados Unidos", "União Europeia", "Índia")) |>
+  select(moeda, regiao, filmes)
+```
+
+Tabela 5: Os padrões monetários mais recorrentes no IMDB
+
+| moeda | regiao         | filmes |
+|:------|:---------------|-------:|
+| \$    | Estados Unidos |   9025 |
+| EUR   | União Europeia |   1820 |
+| INR   | Índia          |    335 |
+
+## Gêneros e lucro
+
+Por falar em padrões monetários, vamos explorar um pouco mais a nossa base de dados. Assim, considerando apenas valores em dólar, qual o gênero do IMDB que concentra maior lucro?
+
+Primeiramente, repetiremos o passo inicial de outrora ao selecionar as colunas que nos interessam. A longa lista em `select` se justifica pelo fato de que voltaremos à `imdb_orcam_rec` futuramente. Assim, comecemos de fato descartando os valores nulos dentro das colunas de orçamento e receita. Em seguida, com ajuda de uma expressão regular, filtramos para que somente os filmes cujo orçamento estejam dolarizados apareçam.
+
+Além disso, com a mão de outra expressão regular, descartamos o padrão monetário norte-americano, de forma que as colunas sejam preenchidas apenas por valores númericos. Dessa forma, estamos livres para criar uma nova variável chamada `lucro`.
+
+Como temos valores monetários que se alteram ao longo do tempo, teremos de trazer os valores de lucro para o presente. Com ajuda do `priceR`, deflaciona-se a coluna relativa ao lucro a valores correntes em dólar americano de 2020 -- cujo processo não será estendido por aqui, preferindo-se carregar apenas o arquivo .rds com valores já deflacionados. Em seguida, organizamos a tibble que responde a nossa pergunta ao separarmos a coluna de gênero, de modo que, tal qual anteriormente, tenhamos um filme para cada agrupamento de forma individual e uma nova coluna relativa ao lucro total de cada gênero.
+
+```{r}
+regex_dolar = "^[\\$]"
+regex_num = "\\(?[0-9,.]+"
+
+imdb_orcam_rec <- imdb_completa |>
+  select(titulo_original,
+         ano,
+         data_lancamento,
+         nota_imdb,
+         direcao,
+         elenco,
+         genero,
+         orcamento,
+         receita) |>
+  drop_na(c("orcamento", "receita")) |>
+  filter (str_detect(orcamento, regex_dolar)) |>
+  mutate(orcamento = as.double(str_extract(orcamento, regex_num)),
+         receita = as.double(str_extract(receita, regex_num)),
+         lucro = receita - orcamento)
+
+# A partir da linha 31 do arquivo "03_tratamento_dolar.R" o uso do priceR
+# é exemplificado.
+
+imdb_orcam_rec <- readRDS("data/rds/imdb_orc_rec.rds")
+
+
+genero_lucro_real <- imdb_orcam_rec |>
+  separate_rows(genero, sep = "\\, ") |>
+  group_by(genero) |>
+  summarise(lucro_soma_genero = sum(lucro_real)) |>
+  arrange(desc(lucro_soma_genero)) |>
+  head(5) |>
+  mutate(genero = c("Aventura",
+                    "Ação",
+                    "Comédia",
+                    "Drama",
+                    "Animação"))
+
+
+```
+
+Com ajuda do `ggplot`, podemos fazer um gráfico que responda a pergunta. Para tal, temos o auxílio do pacote `forcats`, que transforma em fator cada gênero cinematográfico a partir do seu lucro total, de modo que tenhamos um gráfico em formato decrescente, do maior lucro por gênero até o menor, facilitando a leitura da informação.
+
+```{r}
+grafico_lucro_generos <- genero_lucro_real |>
+  mutate(genero = forcats::fct_reorder(genero, lucro_soma_genero)) |>
+  ggplot()+
+  aes(x = lucro_soma_genero, y = genero) +
+  geom_col ()+
+  scale_x_continuous (labels = scales::dollar_format())+
+  labs (x = "lucro total acumulado (em dólares americanos)",
+        y = "gêneros",
+        caption = "Fonte: IMDB")
+
+```
+
+Gráfico 1: Os gêneros mais lucrativos do cinema
+
+```{r}
+grafico_lucro_generos + theme_gray()
+```
+
+A
+
+-   
+
+-   
+
+-   
+
+-   
+
+-   
+
+-   O seu relatório deve (ao menos) responder as seguintes perguntas:
 
 1.  Qual o mês do ano com o maior númedo de filmes? E o dia do ano?
 
@@ -105,7 +353,6 @@ O seu relatório deve (ao menos) responder as seguintes perguntas:
 4.  Considerando apenas orçamentos e receitas em dólar (\$), qual o gênero com maior lucro? E com maior nota média?
 
 5.  Dentre os filmes na base `imdb_completa`, escolha o seu favorito. Então faça os itens a seguir:
-
 
 # 2. E agora?
 
@@ -129,7 +376,7 @@ imdb_avaliacoes <- basesCursoR::pegar_base("imdb_avaliacoes")
 Temos de colocar um código para testar de forma satisfatória a ferramenta
 
 ```{r}
-lucro_real <- readRDS('data\\rds\\lucro_real.rds')
+lucro_real <- readRDS("data\\rds\\lucro_real.rds")
 lucro_real |>
   head(10)
 ```

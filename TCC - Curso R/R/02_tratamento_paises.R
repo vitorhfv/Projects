@@ -1,6 +1,6 @@
 library(tidyverse)
 
-imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
+imdb_completa <- readRDS("data-raw/rds/imdb_completa.rds")
 
 # Primeiramente selecionamos as colunas de interesse, dividimos a coluna de
 # países e retiramos os valores nulos.
@@ -8,9 +8,14 @@ imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
 
 imdb_paises <- imdb_completa |>
   select(titulo_original, ano, pais) |>
-  separate_rows(pais, sep = '\\, ') |>
-  drop_na(pais)
+  separate_rows(pais, sep = "\\, ") |>
+  drop_na(pais) |>
+  filmes_lancados_total(pais) |>
+  distinct(pais, filmes) |>
+  arrange(desc(filmes)) |>
+  head(100)
 
+knitr::kable(imdb_paises)
 
 # Voltamos a usar a função que agrupa o número total de filmes a partir
 # de uma coluna. No caso, agrupamos por país. Usamos a função distinct
@@ -18,21 +23,15 @@ imdb_paises <- imdb_completa |>
 # e a contagem de filmes.
 
 
-imdb_paises |>
-  filmes_lancados_total(pais) |>
-  distinct(pais, filmes) |>
-  arrange(desc(filmes)) |>
-  head (5)
-
 ####### COMENTAR TOP 5
 
 ###### NUMERO DE MOEDAS EM ORCAMENTO \ RECEITA
 
 imdb_orcrec <- imdb_completa |>
   select(titulo_original, ano, orcamento, receita) |>
-  drop_na (c('orcamento', 'receita'))
+  drop_na (c("orcamento", "receita"))
 
-# REGEX ENCONTRA
+# REGEX PARA
 
 regex = "[A-Z|\\$]+(?=\\s)"
 
@@ -43,7 +42,6 @@ imdb_moedas <- imdb_orcrec |>
          moeda_rec = str_extract(receita, regex)) |>
   select(titulo_original, ano, moeda_orc, moeda_rec)
 
-imdb_moedas
 
 imdb_orcamento <- imdb_moedas |>
   filmes_lancados_total(moeda_orc) |>
@@ -54,17 +52,30 @@ imdb_receita <- imdb_moedas |>
   filmes_lancados_total(moeda_rec) |>
   distinct(moeda_rec, filmes)
 
+tabela_orc <- imdb_orcamento |>
+  head(3) |>
+  rename(moeda = moeda_orc) |>
+  mutate(regiao = c("Estados Unidos", "União Europeia", "Índia")) |>
+  select(moeda, regiao, filmes)
+
+knitr::kable(tabela_orc)
+
+# Verificação de igualdade de orçamento e receita em n de filmes.
+
+n_filmes_orc <- imdb_orcamento |>
+  mutate(filmes_em_orcamento = sum(filmes),
+         filmes_em_receita = sum(filmes)) |>
+  select(filmes_em_orcamento, filmes_em_receita) |>
+  distinct(filmes_em_orcamento, filmes_em_receita)
+
+n_filmes_orc$filmes_em_orcamento == n_filmes_orc$filmes_em_receita
+
+# Numero total de padrões monetários
 
 imdb_orcamento
-# Há 62 moedas.
+
+nrow(imdb_orcamento)
 
 ############## 4
 
-imdb_moeda_dolar <- imdb_moedas |>
-  filter(moeda_orc == '$')
 
-imdb_moeda_dolar
-
-#
-# Verificar se colunas de receita e orçamento são iguais
-all(imdb_moeda_dolar$moeda_orc == imdb_moeda_dolar$moeda_rec)

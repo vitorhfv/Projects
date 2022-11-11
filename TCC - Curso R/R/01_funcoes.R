@@ -19,3 +19,5 @@ filmes_lancados_total<- function (data, by, ...) {
     mutate(filmes=n()) |>
     ungroup()
 }
+
+floor_decade  = function(value){ return(value - value %% 10) }
