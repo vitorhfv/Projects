@@ -2,11 +2,16 @@ library(tidyverse)
 
 imdb_completa <- readRDS('data-raw/rds/imdb_completa.rds')
 
+# `r formatC()`
 
 # c)  Em que dia A Felicidade Não se Compra foi lançado?
 
+afnsc_ano_orig <- imdb_completa |>
+  select(titulo_original, ano, direcao) |>
+  filter(direcao == "Frank Capra",
+         ano == '1946')
+
 fav_data <- imdb_completa |>
-  select(titulo_original, direcao, ano, data_lancamento) |>
   filter(direcao == 'Frank Capra',
          ano == '1946') |>
   mutate(data_lancamento = lubridate::as_date(data_lancamento),
@@ -54,4 +59,4 @@ lancamento_fav = lubridate::as_date(imdb_data_aniv$data_lancamento)
 aniversario = lubridate::as_date('1999-07-02')
 intervalo <- lubridate::interval(start = lancamento_fav, end = aniversario)
 resultado <- lubridate::as.period(intervalo, unit = 'year')
-
+resultado

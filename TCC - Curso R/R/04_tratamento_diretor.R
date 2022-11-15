@@ -17,21 +17,27 @@ afnsc_imdb <- imdb_completa |>
   select(titulo_original, ano, nota_imdb, num_avaliacoes) |>
   filter(num_avaliacoes > 50000) |>
   arrange(desc(nota_imdb)) |>
-  head(25) |>
+  slice(1:25) |>
   rownames_to_column('ranking') |>
   tail()
-
 
 # Agora busquemos a respeito do diretor do filme.
 
 capra_pessoa <- imdb_pessoas |>
   filter (nome == 'Frank Capra')
 
+# diferença morte e nascimento
+
+nascimento = lubridate::as_date(capra_pessoa$data_nascimento)
+falecimento = lubridate::as_date(capra_pessoa$data_falecimento)
+intervalo <- lubridate::interval(start = nascimento, end = falecimento)
+resultado <- lubridate::as.period(intervalo, unit = 'year')
+resultado
 
 # PERCENTIL
 
 imdb_comp_percentil <- purrr::map(imdb_completa, function(x)
-  paste0(ntile(x, n = 20L) / 20 * 100, " percentil")) %>%
+  paste0(ntile(x, n = 20L) / 20 * 100)) %>%
   as.data.frame()
 
 # Adicionamos percentil na database principal do IMDB
@@ -40,40 +46,33 @@ imdb_completa$percentil_imdb <- imdb_comp_percentil$nota_imdb
 
 #
 
-capra_completo <- imdb_completa |>
+capra_imdb <- imdb_completa |>
+  select(titulo_original, ano, direcao, nota_imdb, percentil_imdb, elenco) |>
   filter(str_detect(direcao, 'Frank Capra'))
-
-#
-
-capra_imdb <- capra_completo |>
-  select(titulo_original, ano, nota_imdb, percentil_imdb, elenco)
 
 capra_imdb
+nrow(capra_imdb)
 
 # Lucro medio diretor
+# Façamos uma tibble a respeito do lucro medio em usd de todos os diretores.
 
-
-lucro_real_capra <- lucro_real |>
-  filter(str_detect(direcao, 'Frank Capra'))
-
-media_lucro_real_dir <- lucro_real |>
+media_lucro_real_dir_real <- lucro_real |>
   separate_rows(direcao, sep = "\\, ") |>
   group_by(direcao) |>
   summarise(media_lucro_real = mean(lucro_real),
             filmes = n()) |>
   filter(filmes > 0) |>
   arrange(desc(media_lucro_real)) |>
-  rownames_to_column('ranking')
-
-media_lucro_real_dir
-
-media_lucro_real_dir_real <- media_lucro_real_dir |>
+  rownames_to_column('ranking') |>
   mutate(media_lucro_real = scales::dollar(media_lucro_real))
 
+
 # Rankind de diretores por lucro real
+nrow(media_lucro_real_dir_real)
 
 media_lucro_real_dir_real |>
   filter(direcao == 'Frank Capra')
+#
 
 lucro_ranking <- lucro_real |>
   arrange(desc(lucro_real)) |>
@@ -87,5 +86,3 @@ lucro_ranking_capra <- lucro_ranking |>
 # Ranking de filme favorito por lucro real.
 
 lucro_ranking_capra
-
-

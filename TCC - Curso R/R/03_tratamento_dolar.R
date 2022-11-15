@@ -54,7 +54,7 @@ genero_lucro_real <- imdb_orcam_rec |>
   group_by(genero) |>
   summarise(lucro_soma_genero = sum(lucro_real)) |>
   arrange(desc(lucro_soma_genero)) |>
-  head(5) |>
+  slice(1:5) |>
   mutate(genero = c("Aventura",
                     "Ação",
                     "Comédia",
@@ -72,6 +72,8 @@ grafico_lucro_generos <- genero_lucro_real |>
         y = "gêneros",
         caption = "Fonte: IMDB")
 
+grafico_lucro_generos
+
 #```{r}
 #grafico_lucro_generos + theme_bw()
 #```
@@ -85,8 +87,6 @@ imdb_orcam_rec |>
   select(titulo_original, ano, direcao, lucro_real) |>
   arrange(desc(lucro_real))
 
-# Salvar a nova tibble em rds
-saveRDS(imdb_orcam_rec, "data\\rds\\lucro_real.rds")
 
 # Qual a maior nota média por gênero a partir daqueles filmes cujo orçamento
 # e receita estão em dólar?
@@ -103,9 +103,54 @@ imdb_genero_nota <- imdb_orcam_rec |>
   group_by(genero) |>
   summarise(media_imdb = mean(nota_imdb),
             filmes_db = n ()) |>
-  filter (filmes_db > 5) |>
-  arrange(desc(media_imdb))
+  filter (filmes_db > 1000) |>
+  arrange(desc(media_imdb)) |>
+  mutate(media_imdb = round(media_imdb, 2)) |>
+  slice(1:5)
 
 imdb_genero_nota
+## GGPLOT
 
-#
+imdb_genero_nota |>
+  mutate(media_imdb = forcats::as_factor(media_imdb),
+         genero = c("Drama", "Crime", "Romance", "Aventura", "Suspense")) |>
+  ggplot()+
+  aes(x = genero, y = media_imdb)+
+  geom_col()+
+  labs(x = "gênero",
+       y = "nota média do IMDB",
+       caption = "Fonte: IMDB")
+
+
+
+
+# Qual a maior bilheteria do IMDB, apenas valores em dólar?
+
+# Primeiramente, carrega-se a base de dados. Em seguida, cria-se uma nova coluna
+# para a base principal. Então, a partir de vetores, escolhemos as colunas de receita
+# e ano de cada filme. O terceiro argumento é a moeda. Como falamos de dólares,
+# coloca-se "US". Por fim, coloca-se o ano para o qual os dados serão deflacionados.
+# Como o último ano da base é 2020, colocaremos este ano.
+
+imdb_orcam_rec <- readRDS("data/rds/imdb_orc_rec.rds")
+
+imdb_orcam_rec$receita_real <-
+  priceR::adjust_for_inflation(imdb_orcam_rec$receita,
+                               imdb_orcam_rec$ano,
+                               "US",
+                               to_date = 2020)
+
+imdb_receita_real <- imdb_orcam_rec |>
+  select(titulo_original, ano, receita_real)
+
+saveRDS(imdb_receita_real, "data/rds/imdb_receita_real.rds")
+
+imdb_receita_real <- readRDS("data/rds/imdb_receita_real.rds")
+
+imdb_receita_real_f <- imdb_receita_real |>
+  arrange(desc(receita_real)) |>
+  slice (1:10) |>
+  mutate(receita_real = scales::dollar(receita_real)) |>
+  rename(titulo = titulo_original, receita = receita_real)
+
+knitr::kable(imdb_receita_real_f)

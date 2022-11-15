@@ -177,7 +177,7 @@ imdb_paises <- imdb_completa |>
   filmes_lancados_total(pais) |>
   distinct(pais, filmes) |>
   arrange(desc(filmes)) |>
-  head (5)
+  slice(1:5)
 ```
 
 Tabela 4: Os países que mais produziram filmes no mundo (1894-2020)
@@ -244,7 +244,7 @@ Agora vamos ao que interessa: na tabela abaixo, há uma relação com os padrõe
 
 ```{r}
 tabela_orc <- imdb_orcamento |>
-  head(3) |>
+  slice (1:3)|>
   rename(moeda = moeda_orc) |>
   mutate(regiao = c("Estados Unidos", "União Europeia", "Índia")) |>
   select(moeda, regiao, filmes)
@@ -266,7 +266,7 @@ Primeiramente, repetiremos o passo inicial de outrora ao selecionar as colunas q
 
 Além disso, com a mão de outra expressão regular, descartamos o padrão monetário norte-americano, de forma que as colunas sejam preenchidas apenas por valores númericos. Dessa forma, estamos livres para criar uma nova variável chamada `lucro`.
 
-Como temos valores monetários que se alteram ao longo do tempo, teremos de trazer os valores de lucro para o presente. Com ajuda do `priceR`, deflaciona-se a coluna relativa ao lucro a valores correntes em dólar americano de 2020 -- cujo processo não será estendido por aqui, preferindo-se carregar apenas o arquivo .rds com valores já deflacionados. Em seguida, organizamos a tibble que responde a nossa pergunta ao separarmos a coluna de gênero, de modo que, tal qual anteriormente, tenhamos um filme para cada agrupamento de forma individual e uma nova coluna relativa ao lucro total de cada gênero.
+Como temos valores monetários que se alteram ao longo do tempo, teremos de trazer os valores de lucro para o presente. Com ajuda do `priceR`, deflaciona-se a coluna relativa ao lucro a valores correntes em dólar americano de 2020 -- cujo processo não será estendido por aqui por conta da demora relativa ao processo, preferindo-se carregar apenas o arquivo .rds com valores já deflacionados. Em seguida, organizamos a tibble que responde a nossa pergunta ao separarmos a coluna de gênero, de modo que, tal qual anteriormente, tenhamos um filme para cada agrupamento de forma individual e uma nova coluna relativa ao lucro total de cada gênero.
 
 ```{r}
 regex_dolar = "^[\\$]"
@@ -299,7 +299,7 @@ genero_lucro_real <- imdb_orcam_rec |>
   group_by(genero) |>
   summarise(lucro_soma_genero = sum(lucro_real)) |>
   arrange(desc(lucro_soma_genero)) |>
-  head(5) |>
+  slice(1:5) |>
   mutate(genero = c("Aventura",
                     "Ação",
                     "Comédia",
@@ -330,11 +330,93 @@ Gráfico 1: Os gêneros mais lucrativos do cinema
 grafico_lucro_generos + theme_gray()
 ```
 
-A
+Como observado no Gráfico 1, o gênero que mais acumulou lucro ao longo da história do cinema, segundo o IMDB, foi o de aventura, catapultado por grandes arrasa-quarteirões da história do cinema, como Os Caçadores da Arca Perdida (1981) e Guerra nas Estrelas (1977). Em seguida, tem-se ação, que engloba as célebres obras de super-herói da DC e Marvel, especialmente. Esses filmes são considerados um "gamechanger" dentro da indústria, por transformarem os espectadores em "torcedores" assíduos de suas histórias, de forma que é criado um vínculo entre uma franquia e aqueles que assistem. Se tal comportamento já levou Martin Scorsese a comparar as obras da Marvel a "parque de diversões", tamanho ônus somente reforça o faturamento -- e os lucros -- da empresa. Por fim, há drama e comédia e animação, gêneros tradicionais e vistos como bom chamariz de público pelos grandes estúdios.
 
--   
+## E as notas por gênero?
 
--   
+Já temos o ranking de gêneros mais lucrativos do cinema. Porém, como saber qual o gênero mais aceito por aqueles que acompanham a Sétima Arte?
+
+Para tal, reaproveitemos `imdb_orcam_rec`, tibble do exercício anterior, selecionando aquilo que nos interessa e separando a coluna referente aos gêneros, de modo que um mesmo filme possa ser contabilizado por diferentes categorias. A seguir, agrupamos o dataframe por gênero a partir da média de notas do IMDB, filtrando apenas gêneros com mais do que mill filmes contabilizados. Assim, teremos amostras bastante representativas apenas para os gêneros mais tradicionais do cinema. Por fim, arrendondamos os valores da coluna `media_imdb` para que haja somente dois números após a vírgula e ordenamos a tibble de forma decrescente a partir das médias da notas do IMDB. Quanto ao gráfico, por sua vez, voltemos a usar o `ggplot2`. Aliado ao pacote `forcats`, as barras aumentam conforme o ordenamento, deixando a média do IMDB visível apenas para fins didáticos.
+
+```{r}
+imdb_genero_nota <- imdb_orcam_rec |>
+  select(titulo_original, ano, nota_imdb, genero) |>
+  separate_rows(genero, sep = "\\, ") |>
+  group_by(genero) |>
+  summarise(media_imdb = mean(nota_imdb),
+            filmes_db = n ()) |>
+  filter (filmes_db > 1000) |>
+  arrange(desc(media_imdb)) |>
+  mutate(media_imdb = round(media_imdb, 2)) |>
+  slice(1:5)
+```
+
+Gráfico 2: Os cinco gêneros mais bem avaliados do IMDB
+
+```{r}
+imdb_genero_nota |>
+  mutate(media_imdb = forcats::as_factor(media_imdb),
+         genero = c("Drama", "Crime", "Romance", "Aventura", "Suspense")) |>
+  ggplot()+
+  aes(x = genero, y = media_imdb)+
+  geom_col()+
+  labs(x = "gênero",
+       y = "nota média do IMDB",
+       caption = "Fonte: IMDB")
+```
+
+Como visto no Gráfico 2, o gênero mais bem avaliado do IMDB, se contabilizarmos apenas gêneros com mais de mil filmes, é o milenar drama, oriundo do teatro grego em oposição à comédia. Tal categoria contempla diversos clássicos da história do cinema, incluindo o número um da raking IMDB 250, o norte-americano Um Sonho de Liberdade (1994). É também o gênero que mais contempla filmes dentre todos aqueles cujo orçamento e receita aparecem em dólar na plataforma. Completam o raking os gêneros relativos a crime, romance, aventura e suspense, respectivamente.
+
+Agora podemos avançar mais um pouco e responder a uma nova pergunta: quais os filmes mais lucrativos da história, segundo o IMDB, com valores atualizados?
+
+Para tal, carreguemos `imdb_receita_real.rds`, que conta com uma coluna com os valores de bilheteria em dólar atualizados ao longo do tempo a partir do `priceR`. Assim, selecionamos as colunas de interesse, organizando `lucro_real` de forma decrescente, selecionando apenas os dez primeiros e renomeando o nome de cada coluna, além de transformar a coluna relativa ao lucro em valores monetários. Assim, tem-se:
+
+```{r}
+
+# O passo a passo do uso do priceR para deflacionar o valor da receita está na
+# linha 127 de "03_tratamento_dolar.R"
+
+imdb_receita_real <- readRDS("data/rds/imdb_receita_real.rds")
+
+imdb_receita_real_f <- imdb_receita_real |>
+  arrange(desc(receita_real)) |>
+  slice (1:10) |>
+  mutate(receita_real = scales::dollar(receita_real)) |>
+  rename(titulo = titulo_original, receita = receita_real)
+```
+
+Tabela 6: Os filmes com as maiores bilheterias da história, com valores em dólar atualizados (1920-2020)
+
+| titulo                                     |  ano | receita         |
+|:-------------------------------------------|-----:|:----------------|
+| Gone with the Wind                         | 1939 | \$3,572,327,286 |
+| Titanic                                    | 1997 | \$3,539,411,119 |
+| Avatar                                     | 2009 | \$3,366,304,166 |
+| Star Wars                                  | 1977 | \$3,312,707,117 |
+| Avengers: Endgame                          | 2019 | \$2,832,313,795 |
+| The Exorcist                               | 1973 | \$2,572,408,969 |
+| Jaws                                       | 1975 | \$2,269,722,014 |
+| Star Wars: Episode VII - The Force Awakens | 2015 | \$2,258,401,194 |
+| E.T. the Extra-Terrestrial                 | 1982 | \$2,128,104,127 |
+| Avengers: Infinity War                     | 2018 | \$2,111,206,496 |
+
+A maior bilheteria da história do cinema, a valores correntes em dólar de 2020, é do clássico norte-americano E O Vento Levou (1939), épico romance cuja história remonta às consequências da Guerra da Secessão nos Estados Unidos sob os olhares do casal vivido por Vivien Leigh e Clark Gable. Curiosamente, é o filme mais antigo dentre aqueles dez que compõem as maiores receitas. A seguir, há Titanic (1997), protagonizado por Leonardo DiCaprio e Kate Winslet e representante único da década de 1990 na lista. Completam o grupo acima de U\$ 3 bilhões dois filmes de aventura, Avatar (2009) e Guerra nas Estrelas (1977).
+
+Por fim, na casa dos U\$ 2 bilhões há a dupla que encerra a jornada dos Vingadores, mais um filme da saga Star Wars, o clássico de terror O Exorcista (1973), além de Tubarões (1975) e E.T - O Extraterrestre (1982), ambos assinados por Steven Spielberg. Nota-se que a década mais presente no ranking é a de 1970, quando o movimento Nova Hollywood, que surgiu na década anterior, tendo lançado ao estrelado nomes como o de George Lucas e Steven Spielberg, se consolidou nos Estados Unidos como popular entre as grandes massas e não somente entre a crítica especializada.
+
+## E o favorito?
+Aliado ao carregamento de outras bases de dados do IMDB, podemos responder à perguntas a respeito de personalidades do cinema em específico, como atores ou diretores. Façamos, então, um exercício em relação ao cineasta que dirige filme favorito deste que vos escreve, A Felicidade Não se Compra (1946). Para tal, precisamos carregar dois outros arquivos em .rds, `imdb_pessoas.rds` e `lucro_real.rds`, este último oriundo de uma atividade anterior. Assim, tem-se:
+```{r}
+imdb_pessoas <- basesCursoR::pegar_base("imdb_pessoas")
+lucro_real <- readRDS("data\\rds\\lucro_real.rds")
+
+afnsc_ano_orig <- imdb_completa |>
+  select(titulo_original, ano, direcao) |>
+  filter(direcao == "Frank Capra",
+         ano == "1946")
+```
+
+A Felicidade Não se Compra é um filme de xxx, lançado em `r formatC(afnsc_ano_orig$ano)`. 
 
 -   
 
@@ -378,7 +460,7 @@ Temos de colocar um código para testar de forma satisfatória a ferramenta
 ```{r}
 lucro_real <- readRDS("data\\rds\\lucro_real.rds")
 lucro_real |>
-  head(10)
+  slice(1:10)
 ```
 
 aa

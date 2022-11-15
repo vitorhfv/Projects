@@ -13,7 +13,7 @@ imdb_paises <- imdb_completa |>
   filmes_lancados_total(pais) |>
   distinct(pais, filmes) |>
   arrange(desc(filmes)) |>
-  head(100)
+  slice(1:100)
 
 knitr::kable(imdb_paises)
 
@@ -22,6 +22,7 @@ knitr::kable(imdb_paises)
 # para reorganizar a tibble a partir das colunas de países
 # e a contagem de filmes.
 
+scales::dollar(genero_lucro_real$lucro_soma_genero[[1]])
 
 ####### COMENTAR TOP 5
 
@@ -53,7 +54,7 @@ imdb_receita <- imdb_moedas |>
   distinct(moeda_rec, filmes)
 
 tabela_orc <- imdb_orcamento |>
-  head(3) |>
+  slice(1:3) |>
   rename(moeda = moeda_orc) |>
   mutate(regiao = c("Estados Unidos", "União Europeia", "Índia")) |>
   select(moeda, regiao, filmes)
