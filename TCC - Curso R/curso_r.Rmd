@@ -163,7 +163,7 @@ Tabela 3: Os 10 dias do ano com mais estreias cinematográficas (com exceção d
 
 Agora sim! Das cinco maiores datas de estreia dentro de um ano, excluindo o primeiro dia de cada mês, há dois importantes dias comemorativos, dentre os quais o dia de Natal e o dia de São Valentim, quando se comemora o Dia dos Namorados em muitas partes do mundo. Por sua vez, o primeiro lugar fica por conta do dia das Bruxas, o popular Halloween, também comemorado mundialmente no dia 31 de outubro.
 
-# E os países?
+## E os países?
 
 Quais são os países que mais produzem filmes no mundo segundo o IMDB?
 
@@ -405,62 +405,230 @@ A maior bilheteria da história do cinema, a valores correntes em dólar de 2020
 Por fim, na casa dos U\$ 2 bilhões há a dupla que encerra a jornada dos Vingadores, mais um filme da saga Star Wars, o clássico de terror O Exorcista (1973), além de Tubarões (1975) e E.T - O Extraterrestre (1982), ambos assinados por Steven Spielberg. Nota-se que a década mais presente no ranking é a de 1970, quando o movimento Nova Hollywood, que surgiu na década anterior, tendo lançado ao estrelado nomes como o de George Lucas e Steven Spielberg, se consolidou nos Estados Unidos como popular entre as grandes massas e não somente entre a crítica especializada.
 
 ## E o favorito?
-Aliado ao carregamento de outras bases de dados do IMDB, podemos responder à perguntas a respeito de personalidades do cinema em específico, como atores ou diretores. Façamos, então, um exercício em relação ao cineasta que dirige filme favorito deste que vos escreve, A Felicidade Não se Compra (1946). Para tal, precisamos carregar dois outros arquivos em .rds, `imdb_pessoas.rds` e `lucro_real.rds`, este último oriundo de uma atividade anterior. Assim, tem-se:
+
+Aliado ao carregamento de outras bases de dados do IMDB, podemos responder à perguntas a respeito de personalidades do cinema em específico, como atores ou diretores. Façamos, então, um exercício em relação ao cineasta que dirige filme favorito deste que vos escreve, A Felicidade Não se Compra (1946). Para tal, precisamos carregar dois outros arquivos, `imdb_pessoas` e `lucro_real.rds`, este último oriundo de uma atividade anterior, contando com a ajuda dos pacotes que compõem o `tidyverse`, além do `lubridate`. Uma observação importante a se fazer é que a data de estreia que a base de dados mais completa do IMDB nos mostra é referente ao lançamento na Itália, enquanto a coluna de ano é relativa à estreia em seu país de origem. Desse modo, tem-se:
+
 ```{r}
 imdb_pessoas <- basesCursoR::pegar_base("imdb_pessoas")
 lucro_real <- readRDS("data\\rds\\lucro_real.rds")
+
+# Ano de estreia do filme favorito, filtrando a partir de ano e diretor.
 
 afnsc_ano_orig <- imdb_completa |>
   select(titulo_original, ano, direcao) |>
   filter(direcao == "Frank Capra",
          ano == "1946")
+
+# Filme favorito no ranking IMDB (para filmes com mais de 50 mil avaliações) 
+
+afnsc_imdb <- imdb_completa |>
+  select(titulo_original, ano, nota_imdb, num_avaliacoes) |>
+  filter(num_avaliacoes > 50000) |>
+  arrange(desc(nota_imdb)) |>
+  slice(1:25) |>
+  rownames_to_column("ranking") |>
+  tail() |>
+  rename(titulo = titulo_original,
+         nota = nota_imdb,
+         avaliacoes = num_avaliacoes)
+
+# Para calcular a diferença temporal ao nascimento/morte do diretor
+# é preciso filtrar a partir de "imdb_pessoas"
+
+capra_pessoa <- imdb_pessoas |>
+  filter (nome == "Frank Capra") |>
+  mutate(local_falecimento = "La Quinta, California, USA")
+
+# diferença morte e nascimento
+
+nascimento = lubridate::as_date(capra_pessoa$data_nascimento)
+falecimento = lubridate::as_date(capra_pessoa$data_falecimento)
+falecimento1 = as.character(falecimento)
+intervalo <- lubridate::interval(start = nascimento, end = falecimento)
+resultado <- lubridate::as.period(intervalo, unit = "year")
+resultado1 = as.character(resultado)
+
+# Façamos uma coluna de percentil em relação à nota do IMDB para sabermos
+# em que parte do IMDB se encontram os filmes do diretor em questão. Para tal:
+
+imdb_comp_percentil <- purrr::map(imdb_completa, function(x)
+  paste0(ntile(x, n = 20L) / 20 * 100)) %>%
+  as.data.frame()
+
+# Adicionamos percentil na database principal do IMDB
+
+imdb_completa$percentil_imdb <- imdb_comp_percentil$nota_imdb
+
+# Filtramos para o diretor em questão (Frank Capra)
+
+capra_imdb <- imdb_completa |>
+  select(titulo_original, ano, direcao, nota_imdb, percentil_imdb, elenco) |>
+  filter(str_detect(direcao, "Frank Capra"))
+
+capra_imdb_cresc <- capra_imdb |>
+  arrange(desc(nota_imdb))
+
+# Quantos filmes Frank Capra dirigiu?
+capra_idd = nrow(capra_imdb)
+
+# Lucro medio diretor
+# Façamos uma tibble a respeito do lucro medio em usd de todos os diretores.
+
+media_lucro_real_dir_real <- lucro_real |>
+  separate_rows(direcao, sep = "\\, ") |>
+  group_by(direcao) |>
+  summarise(media_lucro_real = mean(lucro_real),
+            filmes = n()) |>
+  filter(filmes > 0) |>
+  arrange(desc(media_lucro_real)) |>
+  rownames_to_column("ranking") |>
+  mutate(media_lucro_real = scales::dollar(media_lucro_real))
+
+# Para que saibamos a posição do diretor em questão em relação
+#aos demais cineastas.
+
+media_lucro_capra <- media_lucro_real_dir_real |>
+  filter(direcao == "Frank Capra")
+
+# ranking de lucro por filme para o caso do diretor em específico
+
+lucro_ranking <- lucro_real |>
+  arrange(desc(lucro_real)) |>
+  rownames_to_column("ranking") |>
+  select(ranking, titulo_original, ano, nota_imdb, direcao, elenco, genero, lucro_real)
+
+# Ranking do lucro de filmes, filtrado por diretor,
+# com valores monetários em dólar.
+
+lucro_ranking_capra <- lucro_ranking |>
+  filter(direcao == "Frank Capra") |>
+  mutate(lucro_real = scales::dollar(lucro_real))
+
+
 ```
 
-A Felicidade Não se Compra é um filme de xxx, lançado em `r formatC(afnsc_ano_orig$ano)`. 
+`r formatC(capra_pessoa$nome_nascimento)` é um cineasta nascido em `r formatC(capra_pessoa$local_nascimento)` e que morreu em `r formatC(capra_pessoa$local_falecimento)`. Ou seja, o diretor nasceu na Itália e morreu nos Estados Unidos. Sua data de nascimento em formato norte-americano é `r formatC(capra_pessoa$data_nascimento)`. Já sua data de falecimento é dada por `r formatC(falecimento1)`. Ao longo de sua carreira `r formatC(capra_pessoa$nome)` dirigiu `r formatC(capra_idd)` filmes. Considerando apenas valores em dólar, o lucro médio de seus filmes é de `r formatC(media_lucro_capra$media_lucro_real)`. O filme com nota no IMDB mais alta de sua filmografia é justamente aquele que é o meu favorito, `r formatC(capra_imdb_cresc$titulo_original[1])`, de `r formatC(capra_imdb_cresc$ano[1])`, que faz parte do percentil `r formatC(capra_imdb_cresc$percentil_imdb[1])` da base de dados do site. Assim, a obra faz parte do 1% de maiores notas do IMDB. Em relação ao ranking de lucro real, que carrega mais de 9 mil filmes, A Felicidade Não se compra se encontra na posição `r formatC(lucro_ranking_capra$ranking[1])`, com `r formatC(lucro_ranking_capra$lucro_real[1])` dólares.
 
--   
+Por fim, o cineasta tinha ``r formatC(resultado1)`` de idade quando veio a se despedir deste mundo. Assim, quando morreu, ele tinha pouco mais de 94 anos e três meses de idade.
 
--   
+Tabela 7: Ranking de notas do IMDB para mais de 50.000 avaliações (20 ao 25):
 
--   
+|ranking |titulo                                |  ano| nota| avaliacoes|
+|:-------|:-------------------------------------|----:|----:|----------:|
+|20      |The Lord of the Rings: The Two Towers | 2002|  8.7|    1449778|
+|21      |It's a Wonderful Life                 | 1946|  8.6|     388310|
+|22      |Shichinin no samurai                  | 1954|  8.6|     307958|
+|23      |Star Wars                             | 1977|  8.6|    1204107|
+|24      |The Silence of the Lambs              | 1991|  8.6|    1234134|
+|25      |Se7en                                 | 1995|  8.6|    1402015|
 
--   O seu relatório deve (ao menos) responder as seguintes perguntas:
-
-1.  Qual o mês do ano com o maior númedo de filmes? E o dia do ano?
-
-2.  Qual o top 5 países com mais filmes na base?
-
-3.  Liste todas as moedas que aparecem nas colunas `orcamento` e `receita` da base `imdb_completa`.
-
-4.  Considerando apenas orçamentos e receitas em dólar (\$), qual o gênero com maior lucro? E com maior nota média?
-
-5.  Dentre os filmes na base `imdb_completa`, escolha o seu favorito. Então faça os itens a seguir:
-
-# 2. E agora?
-
-a)  Quem dirigiu o filme? Faça uma ficha dessa pessoa: idade (hoje em dia ou data de falecimento), onde nasceu, quantos filmes já dirigiu, qual o lucro médio dos filmes que dirigiu (considerando apenas valores em dólar) e outras informações que achar interessante (base `imdb_pessoas`).
-
-b)  Qual a posição desse filme no ranking de notas do IMDB? E no ranking de lucro (considerando apenas valores em dólar)?
-
-c)  Em que dia esse filme foi lançado? E dia da semana? Algum outro filme foi lançado no mesmo dia? Quantos anos você tinha nesse dia?
-
-d)  Faça um gráfico representando a distribuição da nota atribuída a esse filme por idade (base `imdb_avaliacoes`).
+Podemos também responder perguntas a respeito do filme favorito em específico, tais quais: houve lançamento de outro filme no mesmo dia? E qual a diferença entre nossa idade e o lançamento da obra? Para tal, basta o `tidyverse` e o `lubridate`. Assim, tem-se:
 
 ```{r}
-remotes::install_github("curso-r/basesCursoR")
-imdb <- basesCursoR::pegar_base("imdb_completa")
-imdb_pessoas <- basesCursoR::pegar_base("imdb_pessoas")
-imdb_avaliacoes <- basesCursoR::pegar_base("imdb_avaliacoes")
+afnsc_ano_orig <- imdb_completa |>
+  select(titulo_original, ano, direcao) |>
+  filter(direcao == "Frank Capra",
+         ano == "1946")
+
+fav_data <- imdb_completa |>
+  filter(direcao == "Frank Capra",
+         ano == "1946") |>
+  mutate(data_lancamento = lubridate::as_date(data_lancamento),
+         dia_sem = lubridate::wday(data_lancamento, label = TRUE, abbr = FALSE),
+         ano = lubridate::year(data_lancamento),
+         mes = lubridate::month(data_lancamento),
+         dia = lubridate::day(data_lancamento)) |>
+  select(titulo_original, direcao, dia, mes, ano, dia_sem)
+
+fav_data # 11, 3, 1948
+
+#  Algum outro filme foi lançado no mesmo dia?
+
+imdb_datas <- imdb_completa |>
+  select(titulo_original, nota_imdb, direcao, ano, data_lancamento) |>
+  mutate(data_lancamento = lubridate::as_date(data_lancamento)) |>
+  drop_na(data_lancamento) |>
+  mutate(dia_sem = lubridate::wday(data_lancamento, label = TRUE, abbr = FALSE),
+         ano = lubridate::year(data_lancamento),
+         mes = lubridate::month(data_lancamento),
+         dia = lubridate::day(data_lancamento))
+
+imdb_datas_iguais <- imdb_datas |>
+  select(titulo_original, nota_imdb, direcao, dia, mes, ano , dia_sem) |>
+  filter(dia == "11",
+         mes == "3",
+         ano == "1948")
+
+imdb_data_aniv <- imdb_completa |>
+  select(titulo_original, ano, direcao, data_lancamento) |>
+  filter(ano == "1946",
+         direcao == "Frank Capra")
+
+lancamento_fav = lubridate::as_date(imdb_data_aniv$data_lancamento)
+aniversario = lubridate::as_date("1999-07-02")
+aniversario1 = as.character(aniversario)
+intervalo <- lubridate::interval(start = lancamento_fav, end = aniversario)
+resultado_f <- lubridate::as.period(intervalo, unit = "year")
+resultado_f1 <- as.character(resultado_f)
 ```
 
-# Terceiro teste
+A Felicidade Não se Compra é um filme de `r formatC(fav_data$direcao)`, lançado originalmente em `r formatC(afnsc_ano_orig$ano)`. Na Itália, estreou no dia `r formatC(fav_data$dia[1])`, do mês `r formatC(fav_data$mes[1])` de `r formatC(fav_data$ano[1])`. Naquela mesma data, além de um filme italiano, estreava também naquele país europeu outro grande clássico do cinema, `r formatC(imdb_datas_iguais$titulo_original[2])`, cuja nota no IMDB é `r formatC(imdb_datas_iguais$nota_imdb[2])`. Como eu, Vitor, nasci em 02 de julho de 1999 (`r formatC(aniversario1)`), o filme foi lançado `r formatC(resultado_f1)` anos antes de meu nascimento. Em outras palavras, A Felicidade Não se Compra era um filme mais do que cinquentenário quando este que vos escreve nasceu. 
 
-Temos de colocar um código para testar de forma satisfatória a ferramenta
+## O favorito por faixa etária
+
+Por fim, podemos fazer a representação gráfica das notas do IMDB de A Felicidade Não se Compra por idade. Para tal, usaremos o `ggplot`, pacote que compõe o `tidyverse`. Assim, temos:
 
 ```{r}
-lucro_real <- readRDS("data\\rds\\lucro_real.rds")
-lucro_real |>
-  slice(1:10)
+imdb_avaliacoes <- readRDS("data-raw/rds/imdb_avaliacoes.rds")
+
+
+imdb_afnsc <- imdb_completa |>
+  select(id_filme, titulo_original, direcao, ano) |>
+  filter(direcao == "Frank Capra",
+         ano == "1946")
+
+# gráfico
+
+imdb_avaliacoes_fav <- imdb_avaliacoes |>
+  filter(id_filme == imdb_afnsc$id_filme) |>
+  pivot_longer(cols = -1)
+
+
+imdb_avaliacoes_fav <- imdb_avaliacoes_fav |>
+  filter(str_detect(name, "nota_media_idade")) |>
+  mutate(name = str_remove_all(name, "^\\D+"))
+
+fav_imdb_final <- imdb_avaliacoes_fav |>
+  rename(idade = name, nota = value) |>
+  mutate(across(
+    .cols = idade,
+    ~str_replace( ., "_", "-" )
+  ))
+
+
+fav_imdb_final <- fav_imdb_final |>
+  mutate(idade = forcats::fct_recode(idade,
+                                     "Adolescentes" = "0-18",
+                                     "Jovens" = "18-30",
+                                     "Adultos" = "30-45",
+                                     "Pré-idosos e mais" = "45-mais"
+                                     ))
 ```
 
-aa
+Gráfico 3: As notas de It's a Wonderful Life (1945) por faixa etária.
+
+```{r}
+fav_imdb_final |>
+  ggplot()+
+  aes(x = idade, y = nota)+
+  geom_col()+
+  coord_cartesian(ylim = c(8.3, 8.8))+
+  scale_y_continuous(breaks = seq(8.3, 8.8, by = 0.1))
+```
+
+Como se percebe, a faixa etária que mais aprova o filme em questão é a relativa a adolescentes, ao passo que a nota média cai gradativamente conforme as demais faixas etárias. Isso pode ser explicado pelo fato de os mais jovens, que não assistem a tantos filmes, costumarem a procurar por filmes com nota alta no IMDB, como A Felicidade Não se Compra. Por fim, a nota média volta a crescer na faixa de pré-idosos e mais, o que pode ser explicado pelo fato de o filme, um clássido do cinema americano, evocar a nostalgia de seus espectadores mais velhos.
+
+# Conclusão
+Como visto acima, o IMDB é dono de uma ampla base de dados, de modo que é possível construir diversas transformações a partir daquilo que se encontra ali. Com o bom auxílio do R, linguagem de programação estatística, e seus mais diversos pacotes, formulados por seus próprios usuários, é possível que possamos responder de forma satisfatória muitas questões, sejam elas simples ou mais trincadas.
+
+

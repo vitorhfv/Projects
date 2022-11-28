@@ -7,7 +7,7 @@
 
         <meta name="author" content="Vitor H. F. Vieira" />
     
-        <meta name="date" content="2022-11-14" />
+        <meta name="date" content="2022-11-28" />
     
     <title>Um passeio pela história do cinema com o IMDB e o R</title>
 
@@ -1568,10 +1568,10 @@ margin-left: 0 !important;
           <div class="SidebarItems" id="toc">
             <ul>
             <li><a href="#o-que-é-o-imdb" id="toc-o-que-é-o-imdb">O que
-            é o IMDB?</a></li>
-            <li><a href="#e-os-países" id="toc-e-os-países">E os
-            países?</a>
+            é o IMDB?</a>
             <ul>
+            <li><a href="#e-os-países" id="toc-e-os-países">E os
+            países?</a></li>
             <li><a href="#e-as-moedas" id="toc-e-as-moedas">E as
             moedas?</a></li>
             <li><a href="#gêneros-e-lucro" id="toc-gêneros-e-lucro">Gêneros e lucro</a></li>
@@ -1579,9 +1579,10 @@ margin-left: 0 !important;
             gênero?</a></li>
             <li><a href="#e-o-favorito" id="toc-e-o-favorito">E o
             favorito?</a></li>
+            <li><a href="#o-favorito-por-faixa-etária" id="toc-o-favorito-por-faixa-etária">O favorito por faixa
+            etária</a></li>
             </ul></li>
-            <li><a href="#e-agora" id="toc-e-agora">2. E agora?</a></li>
-            <li><a href="#terceiro-teste" id="toc-terceiro-teste">Terceiro teste</a></li>
+            <li><a href="#conclusão" id="toc-conclusão">Conclusão</a></li>
             </ul>
           </div>
           <div data-position="sidebar:post-end" class="InjectedComponents"><div class="dark-theme-toggler"><div class="toggle "><div class="toggle-track"><div class="toggle-track-check"><img src="data:image/png;base64,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" role="presentation" style="pointer-events: none;" width="16" height="16"></div> <div class="toggle-track-x"><img src="data:image/png;base64,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" role="presentation" style="pointer-events: none;" width="16" height="16"></div></div> <div class="toggle-thumb"></div></div> <input type="checkbox" aria-label="Switch between Dark and Default theme" class="toggler-screen-reader-only"></div></div>
@@ -1605,7 +1606,7 @@ o R</h1>
            <span class="glyphicon glyphicon-user"></span> Vitor H. F.
 Vieira
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-14</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 2022-11-28</p>
            
 
    
@@ -1930,9 +1931,8 @@ comemorativos, dentre os quais o dia de Natal e o dia de São Valentim,
 quando se comemora o Dia dos Namorados em muitas partes do mundo. Por
 sua vez, o primeiro lugar fica por conta do dia das Bruxas, o popular
 Halloween, também comemorado mundialmente no dia 31 de outubro.</p>
-</div>
-<div id="e-os-países" class="section level1">
-<h1>E os países?</h1>
+<div id="e-os-países" class="section level2">
+<h2>E os países?</h2>
 <p>Quais são os países que mais produzem filmes no mundo segundo o
 IMDB?</p>
 <p>Mais uma vez, selecionaremos as colunas de interesse, separamos a
@@ -1988,6 +1988,7 @@ Bollywood é mundial. Assim como Reino Unido e França, o que une os
 países que mais produzem filmes no mundo , portanto, é o fato de que
 suas indústrias são muito bem assentadas para o consumo interno, de modo
 que há o hábito de demanda relevante por cinema nesses países.</p>
+</div>
 <div id="e-as-moedas" class="section level2">
 <h2>E as moedas?</h2>
 <p>Muitos países trocaram de moeda nas últimas décadas, principalmente
@@ -2335,79 +2336,321 @@ especializada.</p>
 </div>
 <div id="e-o-favorito" class="section level2">
 <h2>E o favorito?</h2>
+<p>Aliado ao carregamento de outras bases de dados do IMDB, podemos
+responder à perguntas a respeito de personalidades do cinema em
+específico, como atores ou diretores. Façamos, então, um exercício em
+relação ao cineasta que dirige filme favorito deste que vos escreve, A
+Felicidade Não se Compra (1946). Para tal, precisamos carregar dois
+outros arquivos, <code>imdb_pessoas</code> e
+<code>lucro_real.rds</code>, este último oriundo de uma atividade
+anterior, contando com a ajuda dos pacotes que compõem o
+<code>tidyverse</code>, além do <code>lubridate</code>. Uma observação
+importante a se fazer é que a data de estreia que a base de dados mais
+completa do IMDB nos mostra é referente ao lançamento na Itália,
+enquanto a coluna de ano é relativa à estreia em seu país de origem.
+Desse modo, tem-se:</p>
+<pre class="r"><code>imdb_pessoas &lt;- basesCursoR::pegar_base(&quot;imdb_pessoas&quot;)
+lucro_real &lt;- readRDS(&quot;data\\rds\\lucro_real.rds&quot;)
+
+# Ano de estreia do filme favorito, filtrando a partir de ano e diretor.
+
+afnsc_ano_orig &lt;- imdb_completa |&gt;
+  select(titulo_original, ano, direcao) |&gt;
+  filter(direcao == &quot;Frank Capra&quot;,
+         ano == &quot;1946&quot;)
+
+# Filme favorito no ranking IMDB (para filmes com mais de 50 mil avaliações) 
+
+afnsc_imdb &lt;- imdb_completa |&gt;
+  select(titulo_original, ano, nota_imdb, num_avaliacoes) |&gt;
+  filter(num_avaliacoes &gt; 50000) |&gt;
+  arrange(desc(nota_imdb)) |&gt;
+  slice(1:25) |&gt;
+  rownames_to_column(&quot;ranking&quot;) |&gt;
+  tail() |&gt;
+  rename(titulo = titulo_original,
+         nota = nota_imdb,
+         avaliacoes = num_avaliacoes)
+
+# Para calcular a diferença temporal ao nascimento/morte do diretor
+# é preciso filtrar a partir de &quot;imdb_pessoas&quot;
+
+capra_pessoa &lt;- imdb_pessoas |&gt;
+  filter (nome == &quot;Frank Capra&quot;) |&gt;
+  mutate(local_falecimento = &quot;La Quinta, California, USA&quot;)
+
+# diferença morte e nascimento
+
+nascimento = lubridate::as_date(capra_pessoa$data_nascimento)
+falecimento = lubridate::as_date(capra_pessoa$data_falecimento)
+falecimento1 = as.character(falecimento)
+intervalo &lt;- lubridate::interval(start = nascimento, end = falecimento)
+resultado &lt;- lubridate::as.period(intervalo, unit = &quot;year&quot;)
+resultado1 = as.character(resultado)
+
+# Façamos uma coluna de percentil em relação à nota do IMDB para sabermos
+# em que parte do IMDB se encontram os filmes do diretor em questão. Para tal:
+
+imdb_comp_percentil &lt;- purrr::map(imdb_completa, function(x)
+  paste0(ntile(x, n = 20L) / 20 * 100)) %&gt;%
+  as.data.frame()
+
+# Adicionamos percentil na database principal do IMDB
+
+imdb_completa$percentil_imdb &lt;- imdb_comp_percentil$nota_imdb
+
+# Filtramos para o diretor em questão (Frank Capra)
+
+capra_imdb &lt;- imdb_completa |&gt;
+  select(titulo_original, ano, direcao, nota_imdb, percentil_imdb, elenco) |&gt;
+  filter(str_detect(direcao, &quot;Frank Capra&quot;))
+
+capra_imdb_cresc &lt;- capra_imdb |&gt;
+  arrange(desc(nota_imdb))
+
+# Quantos filmes Frank Capra dirigiu?
+capra_idd = nrow(capra_imdb)
+
+# Lucro medio diretor
+# Façamos uma tibble a respeito do lucro medio em usd de todos os diretores.
+
+media_lucro_real_dir_real &lt;- lucro_real |&gt;
+  separate_rows(direcao, sep = &quot;\\, &quot;) |&gt;
+  group_by(direcao) |&gt;
+  summarise(media_lucro_real = mean(lucro_real),
+            filmes = n()) |&gt;
+  filter(filmes &gt; 0) |&gt;
+  arrange(desc(media_lucro_real)) |&gt;
+  rownames_to_column(&quot;ranking&quot;) |&gt;
+  mutate(media_lucro_real = scales::dollar(media_lucro_real))
+
+# Para que saibamos a posição do diretor em questão em relação
+#aos demais cineastas.
+
+media_lucro_capra &lt;- media_lucro_real_dir_real |&gt;
+  filter(direcao == &quot;Frank Capra&quot;)
+
+# ranking de lucro por filme para o caso do diretor em específico
+
+lucro_ranking &lt;- lucro_real |&gt;
+  arrange(desc(lucro_real)) |&gt;
+  rownames_to_column(&quot;ranking&quot;) |&gt;
+  select(ranking, titulo_original, ano, nota_imdb, direcao, elenco, genero, lucro_real)
+
+# Ranking do lucro de filmes, filtrado por diretor,
+# com valores monetários em dólar.
+
+lucro_ranking_capra &lt;- lucro_ranking |&gt;
+  filter(direcao == &quot;Frank Capra&quot;) |&gt;
+  mutate(lucro_real = scales::dollar(lucro_real))</code></pre>
+<p>Francesco Rosario Capra é um cineasta nascido em Bisacquino, Sicily,
+Italy e que morreu em La Quinta, California, USA. Ou seja, o diretor
+nasceu na Itália e morreu nos Estados Unidos. Sua data de nascimento em
+formato norte-americano é 1897-05-18. Já sua data de falecimento é dada
+por 1991-09-03. Ao longo de sua carreira Frank Capra dirigiu 31 filmes.
+Considerando apenas valores em dólar, o lucro médio de seus filmes é de
+$5,306,996. O filme com nota no IMDB mais alta de sua filmografia é
+justamente aquele que é o meu favorito, It’s a Wonderful Life, de 1946,
+que faz parte do percentil 100 da base de dados do site. Assim, a obra
+faz parte do 1% de maiores notas do IMDB. Em relação ao ranking de lucro
+real, que carrega mais de 9 mil filmes, A Felicidade Não se compra se
+encontra na posição 2880, com $26,198,260 dólares.</p>
+<p>Por fim, o cineasta tinha <code>94y 3m 16d 0H 0M 0S</code> de idade
+quando veio a se despedir deste mundo. Assim, quando morreu, ele tinha
+pouco mais de 94 anos e três meses de idade.</p>
+<p>Tabela 7: Ranking de notas do IMDB para mais de 50.000 avaliações (20
+ao 25):</p>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="56%" />
+<col width="7%" />
+<col width="7%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">ranking</th>
+<th align="left">titulo</th>
+<th align="right">ano</th>
+<th align="right">nota</th>
+<th align="right">avaliacoes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">20</td>
+<td align="left">The Lord of the Rings: The Two Towers</td>
+<td align="right">2002</td>
+<td align="right">8.7</td>
+<td align="right">1449778</td>
+</tr>
+<tr class="even">
+<td align="left">21</td>
+<td align="left">It’s a Wonderful Life</td>
+<td align="right">1946</td>
+<td align="right">8.6</td>
+<td align="right">388310</td>
+</tr>
+<tr class="odd">
+<td align="left">22</td>
+<td align="left">Shichinin no samurai</td>
+<td align="right">1954</td>
+<td align="right">8.6</td>
+<td align="right">307958</td>
+</tr>
+<tr class="even">
+<td align="left">23</td>
+<td align="left">Star Wars</td>
+<td align="right">1977</td>
+<td align="right">8.6</td>
+<td align="right">1204107</td>
+</tr>
+<tr class="odd">
+<td align="left">24</td>
+<td align="left">The Silence of the Lambs</td>
+<td align="right">1991</td>
+<td align="right">8.6</td>
+<td align="right">1234134</td>
+</tr>
+<tr class="even">
+<td align="left">25</td>
+<td align="left">Se7en</td>
+<td align="right">1995</td>
+<td align="right">8.6</td>
+<td align="right">1402015</td>
+</tr>
+</tbody>
+</table>
+<p>Podemos também responder perguntas a respeito do filme favorito em
+específico, tais quais: houve lançamento de outro filme no mesmo dia? E
+qual a diferença entre nossa idade e o lançamento da obra? Para tal,
+basta o <code>tidyverse</code> e o <code>lubridate</code>. Assim,
+tem-se:</p>
 <pre class="r"><code>afnsc_ano_orig &lt;- imdb_completa |&gt;
   select(titulo_original, ano, direcao) |&gt;
   filter(direcao == &quot;Frank Capra&quot;,
-         ano == &#39;1946&#39;)</code></pre>
-<p>O filme favorito deste que vos escreve é A Felicidade Não se Compra
-(1946)</p>
-<ul>
-<li></li>
-<li></li>
-<li></li>
-<li>O seu relatório deve (ao menos) responder as seguintes
-perguntas:</li>
-</ul>
-<ol style="list-style-type: decimal">
-<li><p>Qual o mês do ano com o maior númedo de filmes? E o dia do
-ano?</p></li>
-<li><p>Qual o top 5 países com mais filmes na base?</p></li>
-<li><p>Liste todas as moedas que aparecem nas colunas
-<code>orcamento</code> e <code>receita</code> da base
-<code>imdb_completa</code>.</p></li>
-<li><p>Considerando apenas orçamentos e receitas em dólar ($), qual o
-gênero com maior lucro? E com maior nota média?</p></li>
-<li><p>Dentre os filmes na base <code>imdb_completa</code>, escolha o
-seu favorito. Então faça os itens a seguir:</p></li>
-</ol>
+         ano == &quot;1946&quot;)
+
+fav_data &lt;- imdb_completa |&gt;
+  filter(direcao == &quot;Frank Capra&quot;,
+         ano == &quot;1946&quot;) |&gt;
+  mutate(data_lancamento = lubridate::as_date(data_lancamento),
+         dia_sem = lubridate::wday(data_lancamento, label = TRUE, abbr = FALSE),
+         ano = lubridate::year(data_lancamento),
+         mes = lubridate::month(data_lancamento),
+         dia = lubridate::day(data_lancamento)) |&gt;
+  select(titulo_original, direcao, dia, mes, ano, dia_sem)
+
+fav_data # 11, 3, 1948</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   titulo_original       direcao       dia   mes   ano dia_sem     
+##   &lt;chr&gt;                 &lt;chr&gt;       &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;ord&gt;       
+## 1 It&#39;s a Wonderful Life Frank Capra    11     3  1948 quinta-feira</code></pre>
+<pre class="r"><code>#  Algum outro filme foi lançado no mesmo dia?
+
+imdb_datas &lt;- imdb_completa |&gt;
+  select(titulo_original, nota_imdb, direcao, ano, data_lancamento) |&gt;
+  mutate(data_lancamento = lubridate::as_date(data_lancamento)) |&gt;
+  drop_na(data_lancamento) |&gt;
+  mutate(dia_sem = lubridate::wday(data_lancamento, label = TRUE, abbr = FALSE),
+         ano = lubridate::year(data_lancamento),
+         mes = lubridate::month(data_lancamento),
+         dia = lubridate::day(data_lancamento))</code></pre>
+<pre><code>## Warning: 4563 failed to parse.</code></pre>
+<pre class="r"><code>imdb_datas_iguais &lt;- imdb_datas |&gt;
+  select(titulo_original, nota_imdb, direcao, dia, mes, ano , dia_sem) |&gt;
+  filter(dia == &quot;11&quot;,
+         mes == &quot;3&quot;,
+         ano == &quot;1948&quot;)
+
+imdb_data_aniv &lt;- imdb_completa |&gt;
+  select(titulo_original, ano, direcao, data_lancamento) |&gt;
+  filter(ano == &quot;1946&quot;,
+         direcao == &quot;Frank Capra&quot;)
+
+lancamento_fav = lubridate::as_date(imdb_data_aniv$data_lancamento)
+aniversario = lubridate::as_date(&quot;1999-07-02&quot;)
+aniversario1 = as.character(aniversario)
+intervalo &lt;- lubridate::interval(start = lancamento_fav, end = aniversario)
+resultado_f &lt;- lubridate::as.period(intervalo, unit = &quot;year&quot;)
+resultado_f1 &lt;- as.character(resultado_f)</code></pre>
+<p>A Felicidade Não se Compra é um filme de Frank Capra, lançado
+originalmente em 1946. Na Itália, estreou no dia 11, do mês 3 de 1948.
+Naquela mesma data, além de um filme italiano, estreava também naquele
+país europeu outro grande clássico do cinema, A Matter of Life and
+Death, cuja nota no IMDB é 8.1. Como eu, Vitor, nasci em 02 de julho de
+1999 (1999-07-02), o filme foi lançado 51y 3m 21d 0H 0M 0S anos antes de
+meu nascimento. Em outras palavras, A Felicidade Não se Compra era um
+filme mais do que cinquentenário quando este que vos escreve nasceu.</p>
+</div>
+<div id="o-favorito-por-faixa-etária" class="section level2">
+<h2>O favorito por faixa etária</h2>
+<p>Por fim, podemos fazer a representação gráfica das notas do IMDB de A
+Felicidade Não se Compra por idade. Para tal, usaremos o
+<code>ggplot</code>, pacote que compõe o <code>tidyverse</code>. Assim,
+temos:</p>
+<pre class="r"><code>imdb_avaliacoes &lt;- readRDS(&quot;data-raw/rds/imdb_avaliacoes.rds&quot;)
+
+
+imdb_afnsc &lt;- imdb_completa |&gt;
+  select(id_filme, titulo_original, direcao, ano) |&gt;
+  filter(direcao == &quot;Frank Capra&quot;,
+         ano == &quot;1946&quot;)
+
+# gráfico
+
+imdb_avaliacoes_fav &lt;- imdb_avaliacoes |&gt;
+  filter(id_filme == imdb_afnsc$id_filme) |&gt;
+  pivot_longer(cols = -1)
+
+
+imdb_avaliacoes_fav &lt;- imdb_avaliacoes_fav |&gt;
+  filter(str_detect(name, &quot;nota_media_idade&quot;)) |&gt;
+  mutate(name = str_remove_all(name, &quot;^\\D+&quot;))
+
+fav_imdb_final &lt;- imdb_avaliacoes_fav |&gt;
+  rename(idade = name, nota = value) |&gt;
+  mutate(across(
+    .cols = idade,
+    ~str_replace( ., &quot;_&quot;, &quot;-&quot; )
+  ))
+
+
+fav_imdb_final &lt;- fav_imdb_final |&gt;
+  mutate(idade = forcats::fct_recode(idade,
+                                     &quot;Adolescentes&quot; = &quot;0-18&quot;,
+                                     &quot;Jovens&quot; = &quot;18-30&quot;,
+                                     &quot;Adultos&quot; = &quot;30-45&quot;,
+                                     &quot;Pré-idosos e mais&quot; = &quot;45-mais&quot;
+                                     ))</code></pre>
+<p>Gráfico 3: As notas de It’s a Wonderful Life (1945) por faixa
+etária.</p>
+<pre class="r"><code>fav_imdb_final |&gt;
+  ggplot()+
+  aes(x = idade, y = nota)+
+  geom_col()+
+  coord_cartesian(ylim = c(8.3, 8.8))+
+  scale_y_continuous(breaks = seq(8.3, 8.8, by = 0.1))</code></pre>
+<p><img src="data:image/png;base64,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" width="768" /></p>
+<p>Como se percebe, a faixa etária que mais aprova o filme em questão é
+a relativa a adolescentes, ao passo que a nota média cai gradativamente
+conforme as demais faixas etárias. Isso pode ser explicado pelo fato de
+os mais jovens, que não assistem a tantos filmes, costumarem a procurar
+por filmes com nota alta no IMDB, como A Felicidade Não se Compra. Por
+fim, a nota média volta a crescer na faixa de pré-idosos e mais, o que
+pode ser explicado pelo fato de o filme, um clássido do cinema
+americano, evocar a nostalgia de seus espectadores mais velhos.</p>
 </div>
 </div>
-<div id="e-agora" class="section level1">
-<h1>2. E agora?</h1>
-<ol style="list-style-type: lower-alpha">
-<li><p>Quem dirigiu o filme? Faça uma ficha dessa pessoa: idade (hoje em
-dia ou data de falecimento), onde nasceu, quantos filmes já dirigiu,
-qual o lucro médio dos filmes que dirigiu (considerando apenas valores
-em dólar) e outras informações que achar interessante (base
-<code>imdb_pessoas</code>).</p></li>
-<li><p>Qual a posição desse filme no ranking de notas do IMDB? E no
-ranking de lucro (considerando apenas valores em dólar)?</p></li>
-<li><p>Em que dia esse filme foi lançado? E dia da semana? Algum outro
-filme foi lançado no mesmo dia? Quantos anos você tinha nesse
-dia?</p></li>
-<li><p>Faça um gráfico representando a distribuição da nota atribuída a
-esse filme por idade (base <code>imdb_avaliacoes</code>).</p></li>
-</ol>
-<pre class="r"><code>remotes::install_github(&quot;curso-r/basesCursoR&quot;)</code></pre>
-<pre><code>## Skipping install of &#39;basesCursoR&#39; from a github remote, the SHA1 (67c5a510) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
-<pre class="r"><code>imdb &lt;- basesCursoR::pegar_base(&quot;imdb_completa&quot;)
-imdb_pessoas &lt;- basesCursoR::pegar_base(&quot;imdb_pessoas&quot;)
-imdb_avaliacoes &lt;- basesCursoR::pegar_base(&quot;imdb_avaliacoes&quot;)</code></pre>
-</div>
-<div id="terceiro-teste" class="section level1">
-<h1>Terceiro teste</h1>
-<p>Temos de colocar um código para testar de forma satisfatória a
-ferramenta</p>
-<pre class="r"><code>lucro_real &lt;- readRDS(&quot;data\\rds\\lucro_real.rds&quot;)
-lucro_real |&gt;
-  slice(1:10)</code></pre>
-<pre><code>## # A tibble: 10 × 10
-##    titulo_…¹   ano nota_…² direcao elenco genero orcam…³ receita   lucro lucro…⁴
-##    &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Das Cabi…  1920     8.1 Robert… Werne… Fanta…   18000    8811 -9.19e3 -8.16e4
-##  2 The Four…  1921     7.2 Rex In… Pomer… Drama…  800000 9183673  8.38e6  7.44e7
-##  3 The Kid    1921     8.3 Charle… Carl … Comed…  250000   26916 -2.23e5 -1.98e6
-##  4 A Woman …  1923     7   Charle… Edna … Drama…  351000   11233 -3.40e5 -3.02e6
-##  5 The Gold…  1925     8.2 Charle… Charl… Adven…  923000   26916 -8.96e5 -7.96e6
-##  6 Sunrise:…  1927     8.1 F.W. M… Georg… Drama…  200000  121107 -7.89e4 -7.00e5
-##  7 The Unkn…  1927     7.8 Tod Br… Lon C… Drama…  217000    4841 -2.12e5 -1.88e6
-##  8 Wings      1927     7.5 Willia… Clara… Drama… 2000000     746 -2.00e6 -1.78e7
-##  9 The Circ…  1928     8.1 Charle… Al Er… Comed…  900000   26916 -8.73e5 -7.75e6
-## 10 Madam Sa…  1930     6.5 Cecil … Kay J… Comed…  980000    1005 -9.79e5 -8.69e6
-## # … with abbreviated variable names ¹​titulo_original, ²​nota_imdb, ³​orcamento,
-## #   ⁴​lucro_real</code></pre>
-<p>aa</p>
+<div id="conclusão" class="section level1">
+<h1>Conclusão</h1>
+<p>Como visto acima, o IMDB é dono de uma ampla base de dados, de modo
+que é possível construir diversas transformações a partir daquilo que se
+encontra ali. Com o bom auxílio do R, linguagem de programação
+estatística, e seus mais diversos pacotes, formulados por seus próprios
+usuários, é possível que possamos responder de forma satisfatória muitas
+questões, sejam elas simples ou mais trincadas.</p>
 </div>
 </div>
 
