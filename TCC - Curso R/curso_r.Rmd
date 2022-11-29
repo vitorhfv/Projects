@@ -633,4 +633,4 @@ Como se percebe, a faixa etária que mais aprova o filme em questão é a relati
 
 # Conclusão
 
-Como visto acima, o IMDB é dono de uma ampla base de dados, de modo que é possível construir diversas transformações a partir daquilo que se encontra ali. Com o bom auxílio do R, linguagem de programação estatística, e seus mais diversos pacotes, formulados por seus próprios usuários, é possível que possamos responder de forma satisfatória muitas questões, sejam elas simples ou mais trincadas.
+Como visto acima, o IMDB é dono de uma ampla base de dados, de modo que é possível construir diversas transformações a partir daquilo que se encontra por ali. Com o bom auxílio do R, linguagem de programação estatística, e seus mais diversos pacotes, formulados por seus próprios usuários, é possível que possamos responder de forma satisfatória muitas questões, sejam elas simples ou mais trincadas.
