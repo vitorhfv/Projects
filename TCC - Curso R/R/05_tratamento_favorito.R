@@ -1,6 +1,6 @@
 library(tidyverse)
 
-imdb_completa <- readRDS("data-raw/rds/imdb_completa.rds")
+imdb_completa <- basesCursoR::pegar_base("imdb_completa")
 
 # c)  Em que dia A Felicidade Não se Compra foi lançado?
 
