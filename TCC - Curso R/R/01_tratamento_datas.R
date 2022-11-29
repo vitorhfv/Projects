@@ -49,14 +49,6 @@ imdb_meses <- imdb_data |>
 
 imdb_meses
 knitr::kable(imdb_meses)
-
-
-imdb_meses |>
-  ggplot()+
-  aes(x = mes, y = filmes, group = 1)+
-  geom_line(size = 1.6)+
-  theme_set(theme_bw())
-
 #########
 
 # A pergunta subsequente é a seguinte:
@@ -73,12 +65,8 @@ imdb_data2 <- imdb_data |>
   select(mes, dia, filmes) |>
   arrange(desc(filmes))
 
-imdb_data2
-
 # Transformamos a coluna relativa ao mês em "double" para que
 # possa ser transformada em data
-
-#
 
 # Usamos o lubridate para que a coluna mês tenha o respectivo
 # nome de cada mês.
@@ -87,8 +75,6 @@ imdb_mes_dia_tibble <- imdb_data2 |>
   mutate(mes = lubridate::month(mes, label = TRUE))
 
 imdb_mes_dia_tibble
-
-knitr::kable(imdb_mes_dia_tibble_mqu)
 
 # Portanto, de todas as datas dentro um ano o 1º de outubro é aquela
 # que comporta mais estreias cinematográficas! Porém, segundo a tibble
@@ -120,41 +106,6 @@ imdb_decadas <- imdb_data |>
   select(titulo, decada) |>
   filmes_lancados_total(decada) |>
   distinct(decada, filmes) |>
-  arrange(desc(filmes)) |>
-  ggplot()
+  arrange(desc(filmes))
 
 imdb_decadas
-
-# Será que há correlação entre a receita de um filme e o fato de a sua estreia
-# acontecer em um feriado?
-#imdb_orcam_rec <- readRDS("data/rds/imdb_orcam_rec.rds")
-
-#imdb_correla <- imdb_orcam_rec |>
-  #select(titulo_original, data_lancamento, receita)
-#
-
-# imdb_correla$receita_real <-
-  priceR::adjust_for_inflation(imdb_correla$receita,
-                               imdb_correla$data_lancamento,
-                               "US",
-                               to_date = 2020)
-
-# imdb_orcam_rec <- readRDS("data/rds/imdb_orcam_rec.rds")
-
-
-
-
-#imdb_correla <- readRDS("data/rds/imdb_corr.rds")
-
-
-imdb_correla
-
-imdb_correla <- imdb_correla |>
-  select(titulo_original, data_lancamento, receita_real) |>
-  filter(data_lancamento > "1999")
-
-imdb_correla
-
-
-
-??holidays

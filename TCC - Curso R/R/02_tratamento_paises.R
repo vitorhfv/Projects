@@ -1,6 +1,6 @@
 library(tidyverse)
 
-imdb_completa <- readRDS("data-raw/rds/imdb_completa.rds")
+imdb_completa <- basesCursoR::pegar_base("imdb_completa")
 
 # Primeiramente selecionamos as colunas de interesse, dividimos a coluna de
 # países e retiramos os valores nulos.
@@ -21,8 +21,6 @@ knitr::kable(imdb_paises)
 # de uma coluna. No caso, agrupamos por país. Usamos a função distinct
 # para reorganizar a tibble a partir das colunas de países
 # e a contagem de filmes.
-
-scales::dollar(genero_lucro_real$lucro_soma_genero[[1]])
 
 ####### COMENTAR TOP 5
 
@@ -77,6 +75,4 @@ imdb_orcamento
 
 nrow(imdb_orcamento)
 
-############## 4
-
-
+##############

@@ -1,6 +1,6 @@
 library(tidyverse)
 
-imdb_completa <- readRDS("data-raw/rds/imdb_completa.rds")
+imdb_completa <- basesCursoR::pegar_base("imdb_completa")
 
 #4.  Considerando apenas orçamentos e receitas em dólar (\$),
 #   qual o gênero com maior lucro? E com maior nota média?
@@ -75,10 +75,10 @@ grafico_lucro_generos <- genero_lucro_real |>
 grafico_lucro_generos
 
 #```{r}
-#grafico_lucro_generos + theme_bw()
+grafico_lucro_generos + theme_bw()
 #```
 
-scale_x_
+#
 # A partir do lucro real podemos brincar um pouco.
 # Quais os filmes com o maior lucro real da história, em números absolutos,
 # baseando-se apenas em valores em dólar?
@@ -86,7 +86,6 @@ scale_x_
 imdb_orcam_rec |>
   select(titulo_original, ano, direcao, lucro_real) |>
   arrange(desc(lucro_real))
-
 
 # Qual a maior nota média por gênero a partir daqueles filmes cujo orçamento
 # e receita estão em dólar?

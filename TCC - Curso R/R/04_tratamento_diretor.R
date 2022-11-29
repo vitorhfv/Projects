@@ -1,7 +1,8 @@
 library(tidyverse)
 
-imdb_completa <- readRDS("data-raw/rds/imdb_completa.rds")
-imdb_pessoas <- readRDS("data-raw/rds/imdb_pessoas.rds")
+
+imdb_completa <- basesCursoR::pegar_base("imdb_completa")
+imdb_pessoas <- basesCursoR::pegar_base("imdb_pessoas")
 lucro_real <- readRDS("data\\rds\\lucro_real.rds")
 
 # Dentre os filmes na base `imdb_completa`, escolha o seu favorito.
@@ -26,19 +27,12 @@ afnsc_imdb <- imdb_completa |>
 
 afnsc_imdb
 
-knitr::kable(afnsc2)
-
+# Próx passo:
 # Agora busquemos a respeito do diretor do filme.
 
 capra_pessoa <- imdb_pessoas |>
   filter (nome == "Frank Capra") |>
   mutate(local_falecimento = "La Quinta, California, USA")
-
-str_remo
-capra_pessoa
-
-capra_pessoa$local_falecimento =
-
 
 
 # diferença morte e nascimento

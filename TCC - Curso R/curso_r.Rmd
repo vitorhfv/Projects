@@ -629,7 +629,7 @@ fav_imdb_final |>
   labs(caption = "Fonte: IMDB")
 ```
 
-Como se percebe, a faixa etária que mais aprova o filme em questão é a relativa a adolescentes, ao passo que a nota média cai gradativamente conforme as demais faixas etárias. Isso pode ser explicado pelo fato de os mais jovens, que não assistem a tantos filmes, costumarem a procurar por filmes com nota alta no IMDB, como A Felicidade Não se Compra. Por fim, a nota média volta a crescer na faixa de pré-idosos e mais, o que pode ser explicado pelo fato de o filme, um clássido do cinema americano, evocar a nostalgia de seus espectadores mais velhos.
+Como se percebe, a faixa etária que mais aprova o filme em questão é a relativa a adolescentes, ao passo que a nota média cai gradativamente conforme as demais faixas etárias. Isso pode ser explicado pelo fato de os mais jovens, que não assistem a tantos filmes, costumarem a procurar por filmes com nota alta no IMDB, como A Felicidade Não se Compra. Por fim, a nota média volta a crescer na faixa de pré-idosos e mais, o que pode ser explicado pelo fato de o filme, um clássico do cinema americano, evocar a nostalgia de seus espectadores mais velhos.
 
 # Conclusão
 
