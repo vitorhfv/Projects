@@ -266,11 +266,14 @@ Primeiramente, repetiremos o passo inicial de outrora ao selecionar as colunas q
 
 Além disso, com a mão de outra expressão regular, descartamos o padrão monetário norte-americano, de forma que as colunas sejam preenchidas apenas por valores númericos. Dessa forma, estamos livres para criar uma nova variável chamada `lucro`.
 
-Como temos valores monetários que se alteram ao longo do tempo, teremos de trazer os valores de lucro para o presente. Com ajuda do `priceR`, deflaciona-se a coluna relativa ao lucro a valores correntes em dólar americano de 2020 -- cujo processo não será estendido por aqui por conta da demora relativa ao processo, preferindo-se carregar apenas o arquivo .rds com valores já deflacionados. Em seguida, organizamos a tibble que responde a nossa pergunta ao separarmos a coluna de gênero, de modo que, tal qual anteriormente, tenhamos um filme para cada agrupamento de forma individual e uma nova coluna relativa ao lucro total de cada gênero.
+Como temos valores monetários que se alteram ao longo do tempo, teremos de trazer os valores de lucro para o presente. Com ajuda do `priceR`, deflaciona-se a coluna relativa ao lucro a valores correntes em dólar americano de 2020 -- cujo processo não será estendido neste relatório por conta da demora relativa ao processo e a aparente incompatibilidade do `priceR` com o chunk do RMD, preferindo-se carregar apenas o arquivo .rds com valores já deflacionados. O uso do pacote em ação pode ser visto no [Github](https://github.com/vitorhfv/Projects/blob/main/TCC%20-%20Curso%20R/R/03_tratamento_dolar.R). Em seguida, organizamos a tibble que responde a nossa pergunta ao separarmos a coluna de gênero, de modo que, tal qual anteriormente, tenhamos um filme para cada agrupamento de forma individual e uma nova coluna relativa ao lucro total de cada gênero.
 
 ```{r}
+library(tidyverse)
+
 regex_dolar = "^[\\$]"
 regex_num = "\\(?[0-9,.]+"
+
 
 imdb_orcam_rec <- imdb_completa |>
   select(titulo_original,
@@ -291,8 +294,7 @@ imdb_orcam_rec <- imdb_completa |>
 # A partir da linha 31 do arquivo "03_tratamento_dolar.R" o uso do priceR
 # é exemplificado.
 
-imdb_orcam_rec <- readRDS("data/rds/imdb_orc_rec.rds")
-
+imdb_orcam_rec = readRDS("data/rds/imdb_orc_rec.rds")
 
 genero_lucro_real <- imdb_orcam_rec |>
   separate_rows(genero, sep = "\\, ") |>
@@ -369,12 +371,13 @@ Como visto no Gráfico 2, o gênero mais bem avaliado do IMDB, se contabilizarmo
 
 Agora podemos avançar mais um pouco e responder a uma nova pergunta: quais os filmes mais lucrativos da história, segundo o IMDB, com valores atualizados?
 
-Para tal, carreguemos `imdb_receita_real.rds`, que conta com uma coluna com os valores de bilheteria em dólar atualizados ao longo do tempo a partir do `priceR`. Assim, selecionamos as colunas de interesse, organizando `lucro_real` de forma decrescente, selecionando apenas os dez primeiros e renomeando o nome de cada coluna, além de transformar a coluna relativa ao lucro em valores monetários. Assim, tem-se:
+Para tal, carreguemos `imdb_receita_real.rds`, que conta com uma coluna com os valores de bilheteria em dólar atualizados ao longo do tempo a partir do `priceR`. As pastas relativas aos códigos podem ser acessadas a partir do [Github](https://github.com/vitorhfv/Projects/blob/main/TCC%20-%20Curso%20R/R/03_tratamento_dolar.R). Assim, selecionamos as colunas de interesse, organizando `lucro_real` de forma decrescente, selecionando apenas os dez primeiros e renomeando o nome de cada coluna, além de transformar a coluna relativa ao lucro em valores monetários. Assim, tem-se:
 
 ```{r}
 
 # O passo a passo do uso do priceR para deflacionar o valor da receita está na
-# linha 127 de "03_tratamento_dolar.R"
+# linha 137 de "03_tratamento_dolar.R", que pode ser acessada a partir
+# do link Github no parágrafo acima.
 
 imdb_receita_real <- readRDS("data/rds/imdb_receita_real.rds")
 
@@ -410,7 +413,7 @@ Aliado ao carregamento de outras bases de dados do IMDB, podemos responder à pe
 
 ```{r}
 imdb_pessoas <- basesCursoR::pegar_base("imdb_pessoas")
-lucro_real <- readRDS("data\\rds\\lucro_real.rds")
+lucro_real <- readRDS("data/rds/lucro_real.rds")
 
 # Ano de estreia do filme favorito, filtrando a partir de ano e diretor.
 
@@ -509,18 +512,18 @@ lucro_ranking_capra <- lucro_ranking |>
 
 `r formatC(capra_pessoa$nome_nascimento)` é um cineasta nascido em `r formatC(capra_pessoa$local_nascimento)` e que morreu em `r formatC(capra_pessoa$local_falecimento)`. Ou seja, o diretor nasceu na Itália e morreu nos Estados Unidos. Sua data de nascimento em formato norte-americano é `r formatC(capra_pessoa$data_nascimento)`. Já sua data de falecimento é dada por `r formatC(falecimento1)`. Ao longo de sua carreira `r formatC(capra_pessoa$nome)` dirigiu `r formatC(capra_idd)` filmes. Considerando apenas valores em dólar, o lucro médio de seus filmes é de `r formatC(media_lucro_capra$media_lucro_real)`. O filme com nota no IMDB mais alta de sua filmografia é justamente aquele que é o meu favorito, `r formatC(capra_imdb_cresc$titulo_original[1])`, de `r formatC(capra_imdb_cresc$ano[1])`, que faz parte do percentil `r formatC(capra_imdb_cresc$percentil_imdb[1])` da base de dados do site. Assim, a obra faz parte do 1% de maiores notas do IMDB. Em relação ao ranking de lucro real, que carrega mais de 9 mil filmes, A Felicidade Não se compra se encontra na posição `r formatC(lucro_ranking_capra$ranking[1])`, com `r formatC(lucro_ranking_capra$lucro_real[1])` dólares.
 
-Por fim, o cineasta tinha ``r formatC(resultado1)`` de idade quando veio a se despedir deste mundo. Assim, quando morreu, ele tinha pouco mais de 94 anos e três meses de idade.
+Por fim, o cineasta tinha `r formatC(resultado1)` de idade quando veio a se despedir deste mundo. Assim, quando morreu, ele tinha pouco mais de 94 anos e três meses de idade.
 
 Tabela 7: Ranking de notas do IMDB para mais de 50.000 avaliações (20 ao 25):
 
-|ranking |titulo                                |  ano| nota| avaliacoes|
-|:-------|:-------------------------------------|----:|----:|----------:|
-|20      |The Lord of the Rings: The Two Towers | 2002|  8.7|    1449778|
-|21      |It's a Wonderful Life                 | 1946|  8.6|     388310|
-|22      |Shichinin no samurai                  | 1954|  8.6|     307958|
-|23      |Star Wars                             | 1977|  8.6|    1204107|
-|24      |The Silence of the Lambs              | 1991|  8.6|    1234134|
-|25      |Se7en                                 | 1995|  8.6|    1402015|
+| ranking | titulo                                |  ano | nota | avaliacoes |
+|:--------|:--------------------------------------|-----:|-----:|-----------:|
+| 20      | The Lord of the Rings: The Two Towers | 2002 |  8.7 |    1449778 |
+| 21      | It's a Wonderful Life                 | 1946 |  8.6 |     388310 |
+| 22      | Shichinin no samurai                  | 1954 |  8.6 |     307958 |
+| 23      | Star Wars                             | 1977 |  8.6 |    1204107 |
+| 24      | The Silence of the Lambs              | 1991 |  8.6 |    1234134 |
+| 25      | Se7en                                 | 1995 |  8.6 |    1402015 |
 
 Podemos também responder perguntas a respeito do filme favorito em específico, tais quais: houve lançamento de outro filme no mesmo dia? E qual a diferença entre nossa idade e o lançamento da obra? Para tal, basta o `tidyverse` e o `lubridate`. Assim, tem-se:
 
@@ -540,7 +543,7 @@ fav_data <- imdb_completa |>
          dia = lubridate::day(data_lancamento)) |>
   select(titulo_original, direcao, dia, mes, ano, dia_sem)
 
-fav_data # 11, 3, 1948
+fav_data # 11, 3, 1948.
 
 #  Algum outro filme foi lançado no mesmo dia?
 
@@ -572,15 +575,14 @@ resultado_f <- lubridate::as.period(intervalo, unit = "year")
 resultado_f1 <- as.character(resultado_f)
 ```
 
-A Felicidade Não se Compra é um filme de `r formatC(fav_data$direcao)`, lançado originalmente em `r formatC(afnsc_ano_orig$ano)`. Na Itália, estreou no dia `r formatC(fav_data$dia[1])`, do mês `r formatC(fav_data$mes[1])` de `r formatC(fav_data$ano[1])`. Naquela mesma data, além de um filme italiano, estreava também naquele país europeu outro grande clássico do cinema, `r formatC(imdb_datas_iguais$titulo_original[2])`, cuja nota no IMDB é `r formatC(imdb_datas_iguais$nota_imdb[2])`. Como eu, Vitor, nasci em 02 de julho de 1999 (`r formatC(aniversario1)`), o filme foi lançado `r formatC(resultado_f1)` anos antes de meu nascimento. Em outras palavras, A Felicidade Não se Compra era um filme mais do que cinquentenário quando este que vos escreve nasceu. 
+A Felicidade Não se Compra é um filme de `r formatC(fav_data$direcao)`, lançado originalmente em `r formatC(afnsc_ano_orig$ano)`. Na Itália, estreou no dia `r formatC(fav_data$dia[1])`, do mês `r formatC(fav_data$mes[1])` de `r formatC(fav_data$ano[1])`. Naquela mesma data, além de um filme italiano, estreava também naquele país europeu outro grande clássico do cinema, `r formatC(imdb_datas_iguais$titulo_original[2])`, cuja nota no IMDB é `r formatC(imdb_datas_iguais$nota_imdb[2])`. Como eu, Vitor, nasci em 02 de julho de 1999 (`r formatC(aniversario1)`), o filme foi lançado `r formatC(resultado_f1)` anos antes de meu nascimento. Em outras palavras, A Felicidade Não se Compra era um filme mais do que cinquentenário quando este que vos escreve nasceu.
 
 ## O favorito por faixa etária
 
 Por fim, podemos fazer a representação gráfica das notas do IMDB de A Felicidade Não se Compra por idade. Para tal, usaremos o `ggplot`, pacote que compõe o `tidyverse`. Assim, temos:
 
 ```{r}
-imdb_avaliacoes <- readRDS("data-raw/rds/imdb_avaliacoes.rds")
-
+imdb_avaliacoes <- basesCursoR::pegar_base("imdb_avaliacoes")
 
 imdb_afnsc <- imdb_completa |>
   select(id_filme, titulo_original, direcao, ano) |>
@@ -623,12 +625,12 @@ fav_imdb_final |>
   aes(x = idade, y = nota)+
   geom_col()+
   coord_cartesian(ylim = c(8.3, 8.8))+
-  scale_y_continuous(breaks = seq(8.3, 8.8, by = 0.1))
+  scale_y_continuous(breaks = seq(8.3, 8.8, by = 0.1))+
+  labs(caption = "Fonte: IMDB")
 ```
 
 Como se percebe, a faixa etária que mais aprova o filme em questão é a relativa a adolescentes, ao passo que a nota média cai gradativamente conforme as demais faixas etárias. Isso pode ser explicado pelo fato de os mais jovens, que não assistem a tantos filmes, costumarem a procurar por filmes com nota alta no IMDB, como A Felicidade Não se Compra. Por fim, a nota média volta a crescer na faixa de pré-idosos e mais, o que pode ser explicado pelo fato de o filme, um clássido do cinema americano, evocar a nostalgia de seus espectadores mais velhos.
 
 # Conclusão
+
 Como visto acima, o IMDB é dono de uma ampla base de dados, de modo que é possível construir diversas transformações a partir daquilo que se encontra ali. Com o bom auxílio do R, linguagem de programação estatística, e seus mais diversos pacotes, formulados por seus próprios usuários, é possível que possamos responder de forma satisfatória muitas questões, sejam elas simples ou mais trincadas.
-
-

@@ -45,9 +45,9 @@ imdb_orcam_rec$lucro_real <-
 
 
 saveRDS(imdb_orcam_rec, "data/rds/imdb_orc_rec.rds")
-
 imdb_orcam_rec <- readRDS("data/rds/imdb_orc_rec.rds")
 
+# lucro real
 
 genero_lucro_real <- imdb_orcam_rec |>
   separate_rows(genero, sep = "\\, ") |>
